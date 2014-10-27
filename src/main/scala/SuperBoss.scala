@@ -15,13 +15,16 @@ import scala.collection.mutable.HashSet
 import akka.pattern.ask
 
 case class pastryInit(numRequests: Int)
+case class calculateAverageHops(hops: Int)
+case class doneWithRequests()
+/*
 case class setupNodes(numberNodes: Int, msg: String, top:String, algorithm: String, failNodesList:ArrayBuffer[Int])
 case class printTopologyNeighbours(neigboursList: ArrayBuffer[ActorRef])
 case class executeAlgo(algorithm: String)
 case class gossipHeard(gossiper: String)
 case class pushSumDone(gossiper: String, ratio: Double)
 case class countNodes(gossiper: String)
-
+*/
 
 object SuperBoss {
   
@@ -38,6 +41,10 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     var base = scala.math.pow(2, b).toInt  // 2^b = 2^4 = 16 ==> hex
     var hashset: HashSet[BigInt] = new HashSet[BigInt]()
     var lastInserted:BigInt = 0
+    var totalHopsForNodes:Int = 0
+    var totalNodesVisited: Int = 0
+    var averageHops: Int = 0
+    var completedActors: Int = 0
     println("b and base are "+b+" "+base)
     
   def receive = {
@@ -45,6 +52,10 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     case pastryInit(numRequests: Int) => init_config()
     
     case "Hello" => println("Pastry begins...");
+
+    case calculateAverageHops(hops: Int) => calculateAverageHops(sender, hops)
+
+    case doneWithRequests() => doneWithRequests(sender)
   }
     
      def init_config() {
@@ -56,8 +67,29 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
        println("Printing hashset")
        println(hashset)
      }
-    
-    
+
+  def doneWithRequests(worker: ActorRef): Unit ={
+    completedActors = completedActors + 1
+    if(completedActors == numberNodes){
+      //shutdown here
+      println("="*20)
+      println("Average number of hops are " + averageHops)
+      println("="*20)
+      println("Shutting down")
+      ac.shutdown()
+    }
+  }
+
+  def calculateAverageHops(sender: ActorRef, numberOfHops: Int): Unit ={
+    println("sender is " + sender.path.name)
+    println("number of Hops is " + numberOfHops)
+    totalHopsForNodes = numberOfHops + totalHopsForNodes
+    totalNodesVisited = totalNodesVisited + 1
+    averageHops = totalHopsForNodes/totalNodesVisited
+    println("Average till now :::  " + averageHops)
+
+  }
+
   def joinOnebyOne(id: Int) {   
   // TODO non-duplicate check yet to be added   
   println("Inside joinOnebyOne :::: "  + id)
@@ -130,7 +162,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     //println("nodeIdString " + nodeIdString)
     //println("nodeIdString size is " + nodeIdString.size)
     val actr: ActorRef = context.actorOf(
-      Worker.props(ac, self, numberNodes, b), nodeIdString
+      Worker.props(ac, self, numberNodes, b, numberOfRequests), nodeIdString
     )
     //used futures because we need the join to be sequential and not parallel
     var neighbourId = ""
