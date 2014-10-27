@@ -156,6 +156,7 @@ object Worker {
       //route("timepass", neighbourId, self.path.name, true, true, 0, false)
       /*Commented by Anirudh Subramanian for testing End*/
     }
+    import ac.dispatcher
     cancellable = ac.scheduler.schedule(0 seconds, 1 seconds, self, routeRandom())
 
     senderBoss ! sum
