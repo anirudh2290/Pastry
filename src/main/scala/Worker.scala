@@ -12,6 +12,9 @@ import scala.concurrent.duration._
 import com.typesafe.config.ConfigFactory
 
 case class join(neighbourId: String)
+case class updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean)
+case class route(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean)
+
 
 object Worker {
     
@@ -30,8 +33,12 @@ object Worker {
   // Each actor will have a routing table,  neighbour set, leaf set
 
   var routingTable = Array.ofDim[String](RTrows, RTcols) //, RTcols)       //of size log(numNodes)/log(2^b) rows X 2^b columns
-  var leafSetMinus = Array.ofDim[String](RTcols/2)
-  var leafSetPlus  = Array.ofDim[String](RTcols/2)
+  //var leafSetMinus = Array.ofDim[String](RTcols/2)
+  //var leafSetPlus  = Array.ofDim[String](RTcols/2)
+  var leafSetMinus:ArrayBuffer[String] = new ArrayBuffer[String]
+  var leafSetPlus:ArrayBuffer[String] = new ArrayBuffer[String]
+  var leafMinusIndex: Int = 0
+  var leafPlusIndex: Int = 0
   /*
   var neighbourSet: ArrayBuffer[ActorRef] = new ArrayBuffer[ActorRef]	//of size 2*(2^b)
   var leafSetMinus: ArrayBuffer[ActorRef] = new ArrayBuffer[ActorRef]	//of size (2^b)/2
@@ -69,15 +76,154 @@ object Worker {
       println("="*10)
       println("Node >= 1")
       println("="*10)
-
+      route("timepass", neighbourId, self.path.name, true, true, 0, false)
     }
 
     senderBoss ! sum
   }
 
-  def route(msg: String, nodeId: String, join: Boolean): Unit = {
+  def updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean): Unit = {
+      if(finalNode) {
+        leafSetMinus ++= lsMinus
+        leafSetPlus ++= lsPlus
+        println("Node setup done !")
+      }
+      if(hopNo > 0) {
+        rTable.copyToArray(routingTable(hopNo))
+      }
+  }
+
+  def route(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean): Unit = {
+       var currentNodeName: String = self.path.name
+       println("currentNodeName is " + currentNodeName )
+
+       if(lastNode) {
+         var updateHopsLast = hopNumber + 1
+         var senderNode    = context.actorSelection(senderNodeId)
+         senderNode ! updateTables(updateHopsLast - 1, routingTable(updateHopsLast - 1), leafSetMinus, leafSetPlus, true)
+       }
+
+       if(join) {
+          if(newNode) {
+            val neighbouringActor = context.actorSelection(neighbourNodeId)
+            print("neighbouringActor is " + neighbouringActor)
+            neighbouringActor ! route(msg, "",senderNodeId, join, false, hopNumber, false)
+          }
+          else {
+            var updatedHopNumber = hopNumber + 1
+            var findRoute:(BigInt, Boolean) = searchInTables(senderNodeId, currentNodeName)
+            //Leafset true
+            if(findRoute._2) {
+              /*If not null route to that node with minimum */
+              if(findRoute._1 != null) {
+                var nextInRouteId = findRoute._1.toString(16)
+                var nextInRoute   = context.actorSelection(nextInRouteId)
+                var senderNode    = context.actorSelection(senderNodeId)
+                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, false)
+                nextInRoute ! route(msg, neighbourNodeId, senderNodeId, join, false, updatedHopNumber, true)
+              } else {
+                var senderNode    = context.actorSelection(senderNodeId)
+                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true)
+                println("Nearest key " + currentNodeName)
+              }
+              /*If null then print the hopping ends here*/
+              println("")
+            } else {
+              if (findRoute._1 != null) {
+                var nextInRouteId = findRoute._1.toString(16)
+                var nextInRoute = context.actorSelection(nextInRouteId)
+                var senderNode = context.actorSelection(senderNodeId)
+                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, false)
+                nextInRoute ! route(msg, neighbourNodeId, senderNodeId, join, false, updatedHopNumber, false)
+              } else {
+                var senderNode    = context.actorSelection(senderNodeId)
+                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true)
+                println("Nearest key " + currentNodeName)
+              }
+
+            }
+          }
+
+        }
 
   }
+
+  def searchInTables(senderNodeId: String, currentNodeName: String): (BigInt, Boolean) = {
+   var searchInMinLeaf: Boolean = false
+   var searchInMaxLeaf: Boolean = false
+   var min: BigInt = Long.MaxValue
+   var max: BigInt = Long.MinValue
+   var numericallyClosest: BigInt = null
+   var inLeaf = false
+   if (senderNodeId == null)
+    return (null, false)
+   var key: BigInt = BigInt.apply(senderNodeId, 16)
+    if(leafSetMinus.size > 0) {
+      min = BigInt.apply(leafSetMinus(leafMinusIndex), 16)
+      searchInMinLeaf = true
+    }
+
+    if(leafSetPlus.size > 0) {
+      max = BigInt.apply(leafSetPlus(leafPlusIndex), 16)
+      searchInMaxLeaf = true
+    }
+
+    if(searchInMinLeaf && searchInMaxLeaf) {
+      if (min <= key && key <= max) {
+        numericallyClosest = findMinimumLeafSet(key)
+        if(numericallyClosest != null) {
+          return (numericallyClosest, true)
+        }
+      }
+    }
+    //Longest Common Prefix size
+    var length:Int =  senderNodeId.zip(currentNodeName).takeWhile(Function.tupled(_ == _)).map(_._1).mkString.size
+    var column:BigInt = BigInt.apply(senderNodeId.charAt(length).toString(), 16)
+    if(routingTable(length)(column.intValue()) != null) {
+      numericallyClosest = BigInt.apply(routingTable(length)(column.intValue()), 16)
+    }
+
+    return(numericallyClosest, false)
+  }
+
+   private def findMinimumLeafSet(key: BigInt): BigInt = {
+      var rightMostOfLeft: Int = leafSetMinus.size - 1
+      var leftMostOfRight: Int = 0
+      var maxLeft = BigInt.apply(leafSetMinus(rightMostOfLeft), 16)
+      var minRight = BigInt.apply(leafSetMinus(leftMostOfRight), 16)
+      var output: BigInt = null
+      if(maxLeft <= key && key <= minRight) {
+        var diff: BigInt = key - maxLeft
+        var diff2: BigInt = key - minRight
+        if (diff.abs < diff2.abs) {
+          output = maxLeft
+        } else {
+          output = minRight
+        }
+      }
+      if(key <= maxLeft) {
+        output = findNearestNumericalLeaf(leafSetMinus,key)
+      }
+      if(key >= minRight) {
+        //TODO compare between two smallest elements
+        output = findNearestNumericalLeaf(leafSetPlus, key)
+      }
+
+      output
+   }
+
+   private def findNearestNumericalLeaf(leafSet: ArrayBuffer[String],key: BigInt): BigInt = {
+     var leafSetSize: Int = leafSet.size - 1
+     var output: BigInt = null
+     if(leafSetSize == 0) return BigInt.apply(leafSet(leafSetSize))
+     for(i <- 0 to leafSetSize - 1) {
+        if(BigInt.apply(leafSet(i), 16) >= key ) {
+          output = (BigInt.apply(leafSet(i), 16))
+        }
+
+     }
+     return output
+   }
 
  /* private def join(actr: ActorRef, newActr: ActorRef) {
     if (actr == newActr) {

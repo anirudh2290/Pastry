@@ -37,7 +37,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     val b = 4	// Modify as needed
     var base = scala.math.pow(2, b).toInt  // 2^b = 2^4 = 16 ==> hex
     var hashset: HashSet[BigInt] = new HashSet[BigInt]()
-
+    var lastInserted:BigInt = 0
     println("b and base are "+b+" "+base)
     
   def receive = {
@@ -112,14 +112,17 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
      actr ! "test"
      */
      var nodeId: BigInt = BigInt.apply(63, scala.util.Random)
-
+     var addedNumber: BigInt = 0
      while(hashset.contains(nodeId)) {
        nodeId = BigInt.apply(63, scala.util.Random)
        hashset.add(nodeId)
+       addedNumber = nodeId
      }
 
-    if(!hashset.contains(nodeId))
+    if(!hashset.contains(nodeId)) {
       hashset.add(nodeId)
+      addedNumber = nodeId
+    }
 
     var nodeIdString = BigIntToHexString(nodeId)
     //println("hexString " + hexString)
@@ -133,7 +136,8 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     var neighbourId = ""
 
     if(id > 0) {
-      neighbourId = BigIntToHexString(hashset.last)
+
+      neighbourId = BigIntToHexString(lastInserted)
     }
     implicit val timeout = Timeout(15 seconds)
     val future = actr ? join(neighbourId)
@@ -144,6 +148,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     val future: Future[Int] = ask(actr, testInit).mapTo[Int]
     println("Got return for join id :: " + id)
     */
+    lastInserted = addedNumber
     println("result for id " + id + "is " + result )
   }
 
