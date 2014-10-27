@@ -77,16 +77,38 @@ object Worker {
       println("Node >= 1")
       println("="*10)
       /*Added by Anirudh Subramanian for testing Begin*/
-      leafSetMinus += "01"
-      leafSetMinus += "02"
+      /*Tests for findMinimumLeafSet*/
+      /*
       leafSetMinus += "03"
+      leafSetMinus += "04"
       leafSetMinus += "05"
+      leafSetMinus += "07"
 
       leafSetPlus += "A"
       leafSetPlus += "B"
+      leafSetPlus += "C"
+      leafSetPlus += "D"
+      leafSetPlus += "E"
       println("="*10 + "findMinimumLeafSet output" + "="*10)
-      println(findMinimumLeafSet(9).toString(16))
+      println(findMinimumLeafSet(12).toString(16))
       println("="*10 + "findMinimumLeafSet output" + "="*10)
+      */
+      /*findMinimumLeafSet working well*/
+      /*
+      leafSetMinus += "03"
+      leafSetMinus += "04"
+      leafSetMinus += "05"
+      leafSetMinus += "07"
+
+      leafSetPlus += "A"
+      leafSetPlus += "B"
+      leafSetPlus += "C"
+      leafSetPlus += "D"
+      leafSetPlus += "E"
+      println("="*10 + "findMinimumLeafSet output" + "="*10)
+      println(findMinimumLeafSet(12).toString(16))
+      println("="*10 + "findMinimumLeafSet output" + "="*10)
+      */
       /*Added by Anirudh Subramanian for testing End*/
       /*Commented by Anirudh Subramanian for testing Begin*/
       //route("timepass", neighbourId, self.path.name, true, true, 0, false)
@@ -209,19 +231,29 @@ object Worker {
       println("maxLeft is " + maxLeft)
       println("minRight is " + minRight)
       if(maxLeft <= key && key <= minRight) {
+        println("Inside key greater than maxLeft and less than minRight")
         var diff: BigInt = key - maxLeft
         var diff2: BigInt = key - minRight
-        if (diff.abs < diff2.abs) {
+        if(key == maxLeft)
           output = maxLeft
-        } else {
+        if(key == minRight)
           output = minRight
+        if(output == null) {
+          if (diff.abs < diff2.abs) {
+            output = maxLeft
+          } else {
+            output = minRight
+          }
         }
       }
-      if(key <= maxLeft) {
+      if(key < maxLeft) {
+        println("Inside maxLeft")
         output = findNearestNumericalLeaf(leafSetMinus,key)
+        println("output is " + output)
       }
-      if(key >= minRight) {
+      if(key > minRight) {
         //TODO compare between two smallest elements
+        println("Inside minRight")
         output = findNearestNumericalLeaf(leafSetPlus, key)
       }
 
@@ -229,12 +261,26 @@ object Worker {
    }
 
    private def findNearestNumericalLeaf(leafSet: ArrayBuffer[String],key: BigInt): BigInt = {
+     println("Inside findNearestNumericalLeaf")
      var leafSetSize: Int = leafSet.size - 1
+     println("leafSetSize is " + leafSetSize)
      var output: BigInt = null
-     if(leafSetSize == 0) return BigInt.apply(leafSet(leafSetSize))
-     for(i <- 0 to leafSetSize - 1) {
+     if(leafSetSize < 0) return output
+     if(leafSetSize == 0 || leafSetSize == 1) return BigInt.apply(leafSet(leafSetSize), 16)
+     for(i <- 0 to leafSetSize) {
+        println("Inside for")
         if(BigInt.apply(leafSet(i), 16) >= key ) {
-          output = (BigInt.apply(leafSet(i), 16))
+          println("Inside if of leafSet")
+          if(i == 0)
+            return BigInt.apply(leafSet(i), 16)
+          var diff1: BigInt = key - BigInt.apply(leafSet(i), 16)
+          var diff2: BigInt = key - BigInt.apply(leafSet(i - 1), 16)
+          if(diff1.abs  < diff2.abs) {
+            output = BigInt.apply(leafSet(i), 16)
+          } else {
+            output = BigInt.apply(leafSet(i - 1), 16)
+          }
+          return output
         }
 
      }
