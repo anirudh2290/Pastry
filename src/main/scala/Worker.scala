@@ -14,7 +14,7 @@ import com.typesafe.config.ConfigFactory
 case class join(neighbourId: String)
 case class updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean)
 case class route(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean)
-
+case class newNodeState(snId: String, rTable: Array[Array[String]])
 
 object Worker {
     
