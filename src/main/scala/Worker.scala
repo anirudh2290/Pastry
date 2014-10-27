@@ -76,7 +76,21 @@ object Worker {
       println("="*10)
       println("Node >= 1")
       println("="*10)
-      route("timepass", neighbourId, self.path.name, true, true, 0, false)
+      /*Added by Anirudh Subramanian for testing Begin*/
+      leafSetMinus += "01"
+      leafSetMinus += "02"
+      leafSetMinus += "03"
+      leafSetMinus += "05"
+
+      leafSetPlus += "A"
+      leafSetPlus += "B"
+      println("="*10 + "findMinimumLeafSet output" + "="*10)
+      println(findMinimumLeafSet(9).toString(16))
+      println("="*10 + "findMinimumLeafSet output" + "="*10)
+      /*Added by Anirudh Subramanian for testing End*/
+      /*Commented by Anirudh Subramanian for testing Begin*/
+      //route("timepass", neighbourId, self.path.name, true, true, 0, false)
+      /*Commented by Anirudh Subramanian for testing End*/
     }
 
     senderBoss ! sum
@@ -190,8 +204,10 @@ object Worker {
       var rightMostOfLeft: Int = leafSetMinus.size - 1
       var leftMostOfRight: Int = 0
       var maxLeft = BigInt.apply(leafSetMinus(rightMostOfLeft), 16)
-      var minRight = BigInt.apply(leafSetMinus(leftMostOfRight), 16)
+      var minRight = BigInt.apply(leafSetPlus(leftMostOfRight), 16)
       var output: BigInt = null
+      println("maxLeft is " + maxLeft)
+      println("minRight is " + minRight)
       if(maxLeft <= key && key <= minRight) {
         var diff: BigInt = key - maxLeft
         var diff2: BigInt = key - minRight
