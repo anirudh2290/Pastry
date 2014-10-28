@@ -41,6 +41,7 @@ object Worker {
   //var leafSetPlus  = Array.ofDim[String](RTcols/2)
   var leafSetMinus:ArrayBuffer[String] = new ArrayBuffer[String]
   var leafSetPlus:ArrayBuffer[String] = new ArrayBuffer[String]
+  var leafSetSize: Int = 8
   var leafMinusIndex: Int = 0
   var leafPlusIndex: Int = 0
   var neighbourIdString: String = ""
@@ -67,8 +68,9 @@ object Worker {
    }
 
    def compfn1(e1: String, e2: String) = (BigInt.apply(e1, 16) < BigInt.apply(e2, 16))
-
-  def join(senderBoss: ActorRef, neighbourId: String):Unit = {
+   def compfn2(e1: String, e2: String) = (BigInt.apply(e1, 16) > BigInt.apply(e2, 16))
+  
+   def join(senderBoss: ActorRef, neighbourId: String):Unit = {
     neighbourIdString = neighbourId
     println("Inside testInit")
     var i = 0
@@ -191,11 +193,26 @@ object Worker {
 
   def updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean): Unit = {
       if(finalNode) {
+        var dummy = leafSetMinus.clone
         leafSetMinus ++= lsMinus
         leafSetPlus ++= lsPlus
-        leafSetPlus.sortWith(compfn1)
-        leafSetMinus.sortWith(compfn1)
-        println(leafSetPlus)
+        dummy = leafSetPlus.sortWith(compfn1)
+        var i = 0
+        for(i <- 0 to leafSetSize -1) {
+          leafSetPlus(i) = dummy(i)
+        }
+        leafSetPlus.reduceToSize(leafSetSize)
+       
+        dummy = leafSetMinus.sortWith(compfn2)
+        dummy.reduceToSize(leafSetSize)
+        dummy = leafSetMinus.sortWith(compfn1)
+        for(i <- 0 to leafSetSize -1) {
+          leafSetMinus(i) = dummy(i)
+        }
+        leafSetMinus.reduceToSize(leafSetSize)
+       
+        println("leafsetPlus" + leafSetPlus)
+        println("leafsetPlus" + leafSetMinus)
         println("Node setup done !")
       }
       if(hopNo >= 0) {
@@ -530,34 +547,4 @@ object Worker {
        }
      }
    }
-
- /* private def join(actr: ActorRef, newActr: ActorRef) {
-    if (actr == newActr) {
-      // actor already exists
-      // forward message to same
-    }
-    else if((newActr >= leafSetMinus(leafSetMinus.length-1)) && newActr < actr) {
-      var i = 0
-      var min = 0
-      var minActr
-      for (i <- 0 to leafSetMinus.length-1) {
-        // find minimum difference key
-        if(min! = 0 && (abs(leafSetMinus(i)-newActr) < min ) {
-           min = abs(leafSetMinus(i)-newActr)
-           minActr = leafSetMinus(i)
-        }
-        if (minActr != null) {
-          minActr ! "ROUTE" 
-        }    
-          
-      }
-    }
-      
-    
-  }*/
-  
-  
-  // DEBUG: For testing byteArrayCompare. Tested OK
-
-  
  }  
