@@ -1,4 +1,3 @@
-
 import scala.concurrent.Future
 import akka.actor.Actor.Receive
 import akka.actor._
@@ -463,22 +462,25 @@ object Worker {
      var j = 0
      for(i <- 0 to RTrows-1) {
        for(i <- 0 to RTcols-1) {
-         var node = context.actorSelection(routingTable(i)(j))
-         if (node != null) {
-           node ! newNodeState(self.path.name, routingTable)
+    	          
+         if (routingTable(i)(j) != null) {
+        	 var node = context.actorSelection(routingTable(i)(j))
+        	 node ! newNodeState(self.path.name, routingTable)
          }
        }
      }
      for(i <- 0 to leafSetMinus.size-1) {
-       var node = context.actorSelection(leafSetMinus(i))
-       if (node != null) {
-         node ! newNodeState(self.path.name, routingTable)
+       
+       if (leafSetMinus(i) != null) {
+    	   var node = context.actorSelection(leafSetMinus(i))
+    	   node ! newNodeState(self.path.name, routingTable)
        }
      }
      for(i <- 0 to leafSetPlus.size-1) {
-       var node = context.actorSelection(leafSetPlus(i))
-       if (node != null) {
-         node ! newNodeState(self.path.name, routingTable)
+       
+       if (leafSetPlus(i) != null) {
+    	   var node = context.actorSelection(leafSetPlus(i))
+    	   node ! newNodeState(self.path.name, routingTable)
        }
      }
 
@@ -487,12 +489,17 @@ object Worker {
 
    private def updateTablesAsPerNew(senderNodeId: String,  rTable: Array[Array[String]]) {
 
-     var ownNode = BigInt.apply((self.path.name), 16) //BigInt values
+	   println("Inside updateTablesAsPerNew")
+	   var ownNode = BigInt.apply((self.path.name), 16) //BigInt values
      var updater = BigInt.apply(senderNodeId, 16)  // BigInt values
-
+     
      //If senderId falls in leafset
      //if left set
-     if (((BigInt.apply(leafSetMinus(0), 16)) <  updater) && (ownNode >  updater)) {
+    if ((leafSetMinus.size == 0) &&  (updater<ownNode)) {
+    	leafSetMinus(0) = senderNodeId
+    	println("First nodeID:"+ senderNodeId+" added to leaf table minus of "+ self.path.name)
+      }
+    else if (((BigInt.apply(leafSetMinus(0), 16)) <  updater) && (ownNode >  updater)) {
        var dummy = leafSetMinus.clone
        var i = leafSetMinus.size-1
        var j = 0
@@ -511,7 +518,11 @@ object Worker {
 
 
      // if right set
-     if ((ownNode <  updater) && (updater <  (BigInt.apply(leafSetPlus(leafSetPlus.size-1), 16)))) {
+	   if ((leafSetPlus.size == 0) &&  (updater>ownNode)) {
+	       leafSetPlus(0) = senderNodeId
+	       println("First nodeID:"+ senderNodeId+" added to leaf table plus of "+ self.path.name)
+	  }
+	else if ((ownNode <  updater) && (updater <  (BigInt.apply(leafSetPlus(leafSetPlus.size-1), 16)))) {
        var dummy = leafSetPlus.clone
        var i = 0
        var j = 0
