@@ -25,10 +25,6 @@ commands(Make sure you are in Pastry-master folder)
 
 sbt runMain project3 numNodes numRequests
 ============================================================================================================================
-Note 
-
-Please refer to excel sheet in the project root folder for our test results
-
 The largest network we tried for is 10000 nodes on a dual core machine for all the topologies and algorithms
 
 ===========================================================================================================================
@@ -49,3 +45,12 @@ messages on an average take O(log N) steps in case of no recent failures.
 
 ===========================================================================================================================
 Test Results and Analysis:
+
+We observed that inititally as the tables are not well-populated, the message routing takes more hopes than the average expected. However, once all the tables are populated with entries of nodeIds the message routing occurs in very short steps.
+
+When a new node is added and shares its routing table and leaf table with nodes in its routing and leaf table, the routing table of those nodes can be updated in two ways - in the event that an entry already exists - 
+1> between the original entry and the new node, the one with nodeId that is numerically closer to the node that owns the routing table is selected. In this case, any local message traversal will be very quick. This will benefit larger message transfers across the cluster as well, although it might take a number of hops.
+2> between the original entry and the new node, the one with nodeId that is numerically away from the node that owns the routing table is selected. In this case, message transfers across the network will be quick. However, the number of hops will be less deterministic and messages being passed within small localised zones will end up needing a higher number of hops. 
+
+The effect of base value 'b' determines the number of bits that are change per row in the routing table. A lower value of 'b' will benefit in routing as the table contains more entries and make different parts of the network more accessible. However, this comes at the cost of memory per node as the routing table size increases. We can draw a similar argument when it comes to the size of the leaf set. 
+
