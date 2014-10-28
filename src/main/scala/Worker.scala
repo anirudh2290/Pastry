@@ -15,6 +15,7 @@ case class join(neighbourId: String)
 case class updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean)
 case class route(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean)
 case class newNodeState(snId: String, rTable: Array[Array[String]])
+case class getStartedWithRequests()
 
 object Worker {
     
@@ -55,10 +56,15 @@ object Worker {
     case "test" => println("test")
     case join(neighbourId: String) => join(sender, neighbourId)
     case newNodeState(senderNodeId: String, rTable: Array[Array[String]]) => updateTablesAsPerNew(senderNodeId: String, rTable: Array[Array[String]])
+    case getStartedWithRequests() => getStartedWithRequests()
     //case default => println("Entered default : Received message "+default);
 
     
   }
+
+   def getStartedWithRequests(): Unit = {
+     isSetupDone = true
+   }
 
    def compfn1(e1: String, e2: String) = (BigInt.apply(e1, 16) < BigInt.apply(e2, 16))
 
@@ -445,6 +451,8 @@ object Worker {
          node ! newNodeState(self.path.name, routingTable)
        }
      }
+
+     context.actorSelection("..") ! incrementActorcount()
    }
 
    private def updateTablesAsPerNew(senderNodeId: String,  rTable: Array[Array[String]]) {
@@ -550,158 +558,6 @@ object Worker {
   
   
   // DEBUG: For testing byteArrayCompare. Tested OK
-   
-  def testCompare()
-  {
-    //var a:Array[Byte] = Array(15,0,3,4)
-    //var b:Array[Byte] = Array(4,92,0,4)
-    /*
-    var result:Array[Byte] = byteArrayAbsDiff(a,b)
-    var j=0
-    for(j<-0 to result.length-1) {
-    println("Result "+ a(j)+"-"+b(j)+"="+result(j))
-    }
-    */
-  }
-  
- def byteArrayDiff(a: Array[Byte], b: Array[Byte]) : Array[Byte] = {
-    var ret:Array[Byte] = Array.fill(a.length)(0)
-    
-    var retTrunc:Array[Byte] = null
-    var temp : Array[Byte] = null
-    var temp1 : Int = 0
-    
-    if ((a == null) || (b == null) || (a.length != b.length)) {
-      return ret
-    }
-      
-    temp = a.clone
-    var i = 0
-    var j = 0
-    
-          for(j <- a.length-1 to 0 by -1) {
-            
-    	    if (temp(j) < b(j)) {
-    	      println("in if. j= "+j)
-    	      if(temp(j-1) != 0) {
-    	      temp1 = a(j-1)
-    	      temp1 -= 1
-    	      temp(j-1) = temp1.toByte
-    	      temp(j) = (temp(j) + 10).toByte
-    	    }
-    	      else {
-    	        var k = j-1
-    	       
-    	        while( temp(k)== 0) {
-    	          // keep going until you find non-zero value
-    	          k -= 1
-    	        } 
-    	        temp(k) = (temp(k)-1).toByte
-    	        k+=1
-    	        while(k != j) {
-    	          temp(k) = (temp(k) + 9).toByte
-    	          k+=1
-    	        }
-    	        temp(j) = (temp(j) + 10).toByte
-    	    }
-    	      ret(j) = (temp(j)-b(j)).toByte
-    	    }
-    	      else {
-    	         println("in else. j= "+j)
-    	         println("in else. temp(j)= "+temp(j))
-    	         println("in else. ret(j)= "+ret(j))
-    	      ret(j) = (temp(j)-b(j)).toByte
-    	      println("in else. ret(j)= "+ret(j))
-           	}
-          }
-    /*
-    // Truncate ret
-    	 j = ret.length-1
-    	 var k1 = 0
-    	 var k2 = 0
-    	  if(ret(j) == 0) {
-    	  while (ret(j) == 0) {
-    	    j -= 1
-    	  }
-    	  for(k1 <- j to ret.length-1) {
-    	    retTrunc(k2) = ret(k1)
-    	    k2 += 1
-    	  }
-    	  } 
-    	  return retTrunc
-    	  */  
-    	return ret
- }
- 
-  
-  
- def byteArrayAbsDiff(a: Array[Byte], b: Array[Byte]) : Array[Byte] = {
-  
-    val temp : Array[Byte] = Array(0.toByte)
-    println("byteArrayCompare(a, b, 0)"+byteArrayCompare(a, b, 0))
-    
-    if ((a == null) || (b == null) || (a.length != b.length)) {
-        return null
-    }
-      
-       if(byteArrayCompare(a, b, 0) == 1) {
-    	  // then a > b
-         return byteArrayDiff(a,b)
-       }     
-      else if (byteArrayCompare(a, b, 0) == -1) {
-      // then b > a
-        return byteArrayDiff(b,a)
-      }
-      else {
-     // then a=b
-      return temp
-      }
-    
-    }
-     
- 
- def byteArrayCompare(a: Array[Byte], b: Array[Byte], index : Int) : Int = {
-    var ret:Int = 255
-    if ((a == null) || (b == null) || (a.length != b.length)) {
-      return ret
-    }
-      
-    var i = 0
-    for(i <- index to (a.length)-1) {
-     if(a(i) == b(i)) {
-    	 if (index != a.length-1) {
-    	    return byteArrayCompare(a, b, i+1)
-    	 }
-    	 else {
-    	   return 0
-    	 } 
-     }
-     else if(a(i) > b(i)) {
-       var j = 0
-       return 1
-     }
-     else if (a(i) < b(i)) {
-       return -1
-     }       
-    }
-    return ret
-   }
-  
-  def byteCompare(a: Byte, b : Byte) : Int = {
-    val ret = 255
-    if (a == null || b == null) {
-      return ret
-    }
-    else if (a == b) {
-      return 0
-    }
-    else if (a > b) {
-      return 1
-    }
-    else if (b > a) {
-      return -1
-    }
-    return ret
-  }
+
   
  }  

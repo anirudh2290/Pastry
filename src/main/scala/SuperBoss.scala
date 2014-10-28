@@ -17,6 +17,7 @@ import akka.pattern.ask
 case class pastryInit(numRequests: Int)
 case class calculateAverageHops(hops: Int)
 case class doneWithRequests()
+case class incrementActorcount()
 /*
 case class setupNodes(numberNodes: Int, msg: String, top:String, algorithm: String, failNodesList:ArrayBuffer[Int])
 case class printTopologyNeighbours(neigboursList: ArrayBuffer[ActorRef])
@@ -45,6 +46,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     var totalNodesVisited: Int = 0
     var averageHops: Int = 0
     var completedActors: Int = 0
+    var setupActors: Int = 0
     println("b and base are "+b+" "+base)
     
   def receive = {
@@ -54,6 +56,8 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     case "Hello" => println("Pastry begins...");
 
     case calculateAverageHops(hops: Int) => calculateAverageHops(sender, hops)
+
+    case incrementActorcount() => incrementActorcount(sender)
 
     case doneWithRequests() => doneWithRequests(sender)
   }
@@ -67,6 +71,13 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
        println("Printing hashset")
        println(hashset)
      }
+
+  def incrementActorcount(worker: ActorRef): Unit ={
+    setupActors = setupActors + 1
+    if(setupActors == numberNodes) {
+      worker ! getStartedWithRequests()
+    }
+  }
 
   def doneWithRequests(worker: ActorRef): Unit ={
     completedActors = completedActors + 1

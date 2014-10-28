@@ -37,7 +37,7 @@
         <entry file="file://$PROJECT_DIR$/src/main/scala/project3.scala">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="459">
-              <caret line="18" column="24" selection-start-line="18" selection-start-column="24" selection-end-line="18" selection-end-column="24" />
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -46,12 +46,13 @@
       <file leaf-file-name="SuperBoss.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/SuperBoss.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="2886" max-vertical-offset="3604">
-              <caret line="174" column="41" selection-start-line="174" selection-start-column="41" selection-end-line="174" selection-end-column="41" />
+            <state vertical-scroll-proportion="0.0" vertical-offset="3408" max-vertical-offset="3791">
+              <caret line="164" column="8" selection-start-line="164" selection-start-column="8" selection-end-line="164" selection-end-column="8" />
               <folding>
                 <element signature="e#0#62#0" expanded="true" />
-                <element signature="e#2297#2301#0" expanded="true" />
-                <element signature="e#2639#2643#0" expanded="true" />
+                <element signature="e#2425#2429#0" expanded="true" />
+                <element signature="e#2597#2601#0" expanded="true" />
+                <element signature="e#2939#2943#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -60,14 +61,15 @@
       <file leaf-file-name="Worker.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/Worker.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.33333334" vertical-offset="2572" max-vertical-offset="12104">
-              <caret line="158" column="24" selection-start-line="158" selection-start-column="24" selection-end-line="158" selection-end-column="24" />
+            <state vertical-scroll-proportion="0.045945946" vertical-offset="7480" max-vertical-offset="9656">
+              <caret line="441" column="11" selection-start-line="441" selection-start-column="11" selection-end-line="441" selection-end-column="11" />
               <folding>
                 <element signature="e#1#31#0" expanded="true" />
-                <element signature="e#2754#2758#0" expanded="true" />
-                <element signature="e#6152#6156#0" expanded="true" />
-                <element signature="e#6978#6982#0" expanded="true" />
-                <element signature="e#7448#7452#0" expanded="true" />
+                <element signature="e#2743#2747#0" expanded="true" />
+                <element signature="e#2924#2928#0" expanded="true" />
+                <element signature="e#6322#6326#0" expanded="true" />
+                <element signature="e#7148#7152#0" expanded="true" />
+                <element signature="e#7618#7622#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -569,8 +571,9 @@
           <caret line="140" column="5" selection-start-line="140" selection-start-column="5" selection-end-line="140" selection-end-column="5" />
           <folding>
             <element signature="e#0#62#0" expanded="true" />
-            <element signature="e#2297#2301#0" expanded="true" />
-            <element signature="e#2639#2643#0" expanded="true" />
+            <element signature="e#2425#2429#0" expanded="true" />
+            <element signature="e#2597#2601#0" expanded="true" />
+            <element signature="e#2939#2943#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -581,10 +584,11 @@
           <caret line="137" column="22" selection-start-line="137" selection-start-column="22" selection-end-line="137" selection-end-column="22" />
           <folding>
             <element signature="e#1#31#0" expanded="true" />
-            <element signature="e#2754#2758#0" expanded="true" />
-            <element signature="e#6152#6156#0" expanded="true" />
-            <element signature="e#6978#6982#0" expanded="true" />
-            <element signature="e#7448#7452#0" expanded="true" />
+            <element signature="e#2743#2747#0" expanded="true" />
+            <element signature="e#2924#2928#0" expanded="true" />
+            <element signature="e#6322#6326#0" expanded="true" />
+            <element signature="e#7148#7152#0" expanded="true" />
+            <element signature="e#7618#7622#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -608,33 +612,35 @@
     <entry file="file://$PROJECT_DIR$/src/main/scala/project3.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="459">
-          <caret line="18" column="24" selection-start-line="18" selection-start-column="24" selection-end-line="18" selection-end-column="24" />
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/SuperBoss.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2886" max-vertical-offset="3604">
-          <caret line="174" column="41" selection-start-line="174" selection-start-column="41" selection-end-line="174" selection-end-column="41" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="3408" max-vertical-offset="3791">
+          <caret line="164" column="8" selection-start-line="164" selection-start-column="8" selection-end-line="164" selection-end-column="8" />
           <folding>
             <element signature="e#0#62#0" expanded="true" />
-            <element signature="e#2297#2301#0" expanded="true" />
-            <element signature="e#2639#2643#0" expanded="true" />
+            <element signature="e#2425#2429#0" expanded="true" />
+            <element signature="e#2597#2601#0" expanded="true" />
+            <element signature="e#2939#2943#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/Worker.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334" vertical-offset="2572" max-vertical-offset="12104">
-          <caret line="158" column="24" selection-start-line="158" selection-start-column="24" selection-end-line="158" selection-end-column="24" />
+        <state vertical-scroll-proportion="0.045945946" vertical-offset="7480" max-vertical-offset="9656">
+          <caret line="441" column="11" selection-start-line="441" selection-start-column="11" selection-end-line="441" selection-end-column="11" />
           <folding>
             <element signature="e#1#31#0" expanded="true" />
-            <element signature="e#2754#2758#0" expanded="true" />
-            <element signature="e#6152#6156#0" expanded="true" />
-            <element signature="e#6978#6982#0" expanded="true" />
-            <element signature="e#7448#7452#0" expanded="true" />
+            <element signature="e#2743#2747#0" expanded="true" />
+            <element signature="e#2924#2928#0" expanded="true" />
+            <element signature="e#6322#6326#0" expanded="true" />
+            <element signature="e#7148#7152#0" expanded="true" />
+            <element signature="e#7618#7622#0" expanded="true" />
           </folding>
         </state>
       </provider>
