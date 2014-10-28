@@ -94,7 +94,7 @@ object Worker {
        routingTable(i)(column.intValue()) = currentNode
      }
      column = BigInt.apply(currentNode.charAt(0).toString(), 16)
-    println(routingTable(0)(column.intValue()))
+    //println(routingTable(0)(column.intValue()))
     //routingTable(length)(column.intValue()) = neighbourIdString
     println("NeighbourId: " +neighbourIdString+" added to the RT of "+self.path.name)
      
@@ -289,7 +289,7 @@ object Worker {
                 nextInRoute ! route(msg, "", senderNodeId, join, false, updatedHopNumber, true)
               } else {
                 var senderNode    = context.actorSelection(senderNodeId)
-                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true)
+                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
                 println("Nearest key " + currentNodeName)
                 println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber )
                 sendState()
@@ -306,7 +306,7 @@ object Worker {
                 nextInRoute ! route(msg, "", senderNodeId, join, false, updatedHopNumber, false)
               } else {
                 var senderNode    = context.actorSelection(senderNodeId)
-                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true)
+                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
 
                 println("Nearest key " + currentNodeName)
                 println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber )
