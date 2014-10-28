@@ -83,10 +83,19 @@ object Worker {
     
     // filling up the corresponding RT entry
      // Find common prefix between current node and updating node
+     /*
      var length:Int =  neighbourIdString.zip(self.path.name).takeWhile(Function.tupled(_ == _)).map(_._1).mkString.size
      var column:BigInt = BigInt.apply(neighbourIdString.charAt(length).toString(), 16)
-     
-    routingTable(length)(column.intValue()) = neighbourIdString
+     */
+     var currentNode = self.path.name
+     var column:BigInt = 0
+     for(i<-0 to currentNode.length - 1) {
+        column = BigInt.apply(currentNode.charAt(i).toString(), 16)
+       routingTable(i)(column.intValue()) = currentNode
+     }
+     column = BigInt.apply(currentNode.charAt(0).toString(), 16)
+    println(routingTable(0)(column.intValue()))
+    //routingTable(length)(column.intValue()) = neighbourIdString
     println("NeighbourId: " +neighbourIdString+" added to the RT of "+self.path.name)
      
     
@@ -170,7 +179,7 @@ object Worker {
       */
       /*Added by Anirudh Subramanian for testing End*/
       /*Commented by Anirudh Subramanian for testing Begin*/
-      route("timepass", neighbourId, self.path.name, true, true, 0, false)
+      //route("timepass", neighbourId, self.path.name, true, true, 0, false)
       /*Commented by Anirudh Subramanian for testing End*/
     }
     import ac.dispatcher
@@ -200,7 +209,7 @@ object Worker {
      nodeIdString
    }
 
-  def updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean): Unit = {
+  def updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, currentNodeName: String): Unit = {
       if(finalNode) {
         var dummy = leafSetMinus.clone
         leafSetMinus ++= lsMinus
@@ -236,7 +245,10 @@ object Worker {
         println("="*20)
         println("Inside hop greater than 0")
         println("="*20)
+        var column: BigInt = BigInt.apply(currentNodeName.charAt(hopNo).toString(), 16)
+        var temp: String   = routingTable(hopNo)(column.intValue())
         rTable.copyToArray(routingTable(hopNo))
+        routingTable(hopNo)(column.intValue()) = temp
         var i = 0
         for (i<-0 to rTable.length-1) {
           println("table: "+rTable(i))
@@ -251,7 +263,7 @@ object Worker {
          if(lastNode) {
            var updateHopsLast = hopNumber + 1
            var senderNode    = context.actorSelection(senderNodeId)
-           senderNode ! updateTables(updateHopsLast - 1, routingTable(updateHopsLast - 1), leafSetMinus, leafSetPlus, true)
+           senderNode ! updateTables(updateHopsLast - 1, routingTable(updateHopsLast - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
            println("currentNodeName is " + currentNodeName )
            println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updateHopsLast )
            sendState()
@@ -273,7 +285,7 @@ object Worker {
                 var nextInRouteId = BigIntToHexString(findRoute._1)
                 var nextInRoute   = context.actorSelection(nextInRouteId)
                 var senderNode    = context.actorSelection(senderNodeId)
-                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, false)
+                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, false, currentNodeName)
                 nextInRoute ! route(msg, "", senderNodeId, join, false, updatedHopNumber, true)
               } else {
                 var senderNode    = context.actorSelection(senderNodeId)
@@ -290,7 +302,7 @@ object Worker {
                 var nextInRouteId = BigIntToHexString(findRoute._1)
                 var nextInRoute = context.actorSelection(nextInRouteId)
                 var senderNode = context.actorSelection(senderNodeId)
-                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, false)
+                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, false, currentNodeName)
                 nextInRoute ! route(msg, "", senderNodeId, join, false, updatedHopNumber, false)
               } else {
                 var senderNode    = context.actorSelection(senderNodeId)

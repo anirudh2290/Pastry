@@ -46,9 +46,12 @@
       <file leaf-file-name="SuperBoss.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/SuperBoss.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="1128" max-vertical-offset="3536">
-              <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
-              <folding />
+            <state vertical-scroll-proportion="-4.25" vertical-offset="238" max-vertical-offset="3774">
+              <caret line="21" column="20" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="20" />
+              <folding>
+                <element signature="e#0#62#0" expanded="true" />
+                <element signature="e#2939#2943#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -56,11 +59,13 @@
       <file leaf-file-name="Worker.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/Worker.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.74127907" vertical-offset="3621" max-vertical-offset="9911">
-              <caret line="228" column="37" selection-start-line="228" selection-start-column="37" selection-end-line="228" selection-end-column="37" />
+            <state vertical-scroll-proportion="0.77150536" vertical-offset="3997" max-vertical-offset="10353">
+              <caret line="252" column="0" selection-start-line="252" selection-start-column="0" selection-end-line="252" selection-end-column="0" />
               <folding>
                 <element signature="e#0#30#0" expanded="true" />
-                <element signature="e#8682#8686#0" expanded="true" />
+                <element signature="e#7292#7296#0" expanded="true" />
+                <element signature="e#8143#8147#0" expanded="true" />
+                <element signature="e#9880#9884#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -586,7 +591,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2788" max-vertical-offset="3791">
           <caret line="164" column="8" selection-start-line="164" selection-start-column="8" selection-end-line="164" selection-end-column="8" />
-          <folding />
+          <folding>
+            <element signature="e#0#62#0" expanded="true" />
+            <element signature="e#2939#2943#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -596,7 +604,9 @@
           <caret line="201" column="25" selection-start-line="201" selection-start-column="25" selection-end-line="201" selection-end-column="25" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
-            <element signature="e#8682#8686#0" expanded="true" />
+            <element signature="e#7292#7296#0" expanded="true" />
+            <element signature="e#8143#8147#0" expanded="true" />
+            <element signature="e#9880#9884#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -621,7 +631,10 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="2353" max-vertical-offset="3060">
           <caret line="140" column="5" selection-start-line="140" selection-start-column="5" selection-end-line="140" selection-end-column="5" />
-          <folding />
+          <folding>
+            <element signature="e#0#62#0" expanded="true" />
+            <element signature="e#2939#2943#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -631,7 +644,9 @@
           <caret line="137" column="22" selection-start-line="137" selection-start-column="22" selection-end-line="137" selection-end-column="22" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
-            <element signature="e#8682#8686#0" expanded="true" />
+            <element signature="e#7292#7296#0" expanded="true" />
+            <element signature="e#8143#8147#0" expanded="true" />
+            <element signature="e#9880#9884#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -652,6 +667,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/scala/SuperBoss.scala">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.25" vertical-offset="238" max-vertical-offset="3774">
+          <caret line="21" column="20" selection-start-line="21" selection-start-column="16" selection-end-line="21" selection-end-column="20" />
+          <folding>
+            <element signature="e#0#62#0" expanded="true" />
+            <element signature="e#2939#2943#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/project3.scala">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="459">
@@ -660,21 +686,15 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/scala/SuperBoss.scala">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1128" max-vertical-offset="3536">
-          <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/Worker.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.74127907" vertical-offset="3621" max-vertical-offset="9911">
-          <caret line="228" column="37" selection-start-line="228" selection-start-column="37" selection-end-line="228" selection-end-column="37" />
+        <state vertical-scroll-proportion="0.77150536" vertical-offset="3997" max-vertical-offset="10353">
+          <caret line="252" column="0" selection-start-line="252" selection-start-column="0" selection-end-line="252" selection-end-column="0" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
-            <element signature="e#8682#8686#0" expanded="true" />
+            <element signature="e#7292#7296#0" expanded="true" />
+            <element signature="e#8143#8147#0" expanded="true" />
+            <element signature="e#9880#9884#0" expanded="true" />
           </folding>
         </state>
       </provider>
