@@ -237,8 +237,8 @@ object Worker {
         leafSetMinus ++= dummy
         leafSetMinus.reduceToSize(leafSetSize)
         */
-        println("leafsetPlus" + leafSetPlus)
-        println("leafsetPlus" + leafSetMinus)
+      //  println("leafsetPlus : " + leafSetPlus)
+      //  println("leafsetPlus : " + leafSetMinus)
         println("Node setup done !")
       }
       if(hopNo >= 0) {
@@ -251,7 +251,7 @@ object Worker {
         routingTable(hopNo)(column.intValue()) = temp
         var i = 0
         for (i<-0 to rTable.length-1) {
-          println("table: "+rTable(i))
+       //   println("table: "+rTable(i))
         }
       }
   }
@@ -407,7 +407,7 @@ object Worker {
     var length:Int =  senderNodeId.zip(currentNodeName).takeWhile(Function.tupled(_ == _)).map(_._1).mkString.size
     println("senderNodeId is " + senderNodeId)
     println("currentNodeName is " + currentNodeName)
-    println("Accessing character" + length)
+   // println("Accessing character" + length)
     if(length == 16)
       return (numericallyClosest, false)
     var column:BigInt = BigInt.apply(senderNodeId.charAt(length).toString(), 16)
@@ -427,10 +427,10 @@ object Worker {
       var maxLeft = BigInt.apply(leafSetMinus(rightMostOfLeft), 16)
       var minRight = BigInt.apply(leafSetPlus(leftMostOfRight), 16)
       var output: BigInt = null
-      println("maxLeft is " + maxLeft)
-      println("minRight is " + minRight)
+     // println("maxLeft is " + maxLeft)
+     // println("minRight is " + minRight)
       if(maxLeft <= key && key <= minRight) {
-        println("Inside key greater than maxLeft and less than minRight")
+    //    println("Inside key greater than maxLeft and less than minRight")
         var diff: BigInt = key - maxLeft
         var diff2: BigInt = key - minRight
         if(key == maxLeft)
@@ -446,13 +446,13 @@ object Worker {
         }
       }
       if(key < maxLeft) {
-        println("Inside maxLeft")
+     //   println("Inside maxLeft")
         output = findNearestNumericalLeaf(leafSetMinus,key)
-        println("output is " + output)
+    //    println("output is " + output)
       }
       if(key > minRight) {
         //TODO compare between two smallest elements
-        println("Inside minRight")
+      //  println("Inside minRight")
         output = findNearestNumericalLeaf(leafSetPlus, key)
       }
 
@@ -462,14 +462,14 @@ object Worker {
    private def findNearestNumericalLeaf(leafSet: ArrayBuffer[String],key: BigInt): BigInt = {
      println("Inside findNearestNumericalLeaf")
      var leafSetSize: Int = leafSet.size - 1
-     println("leafSetSize is " + leafSetSize)
+    // println("leafSetSize is " + leafSetSize)
      var output: BigInt = null
      if(leafSetSize < 0) return output
      if(leafSetSize == 0 || leafSetSize == 1) return BigInt.apply(leafSet(leafSetSize), 16)
      for(i <- 0 to leafSetSize) {
-        println("Inside for")
+       // println("Inside for")
         if(BigInt.apply(leafSet(i), 16) >= key ) {
-          println("Inside if of leafSet")
+          //println("Inside if of leafSet")
           if(i == 0)
             return BigInt.apply(leafSet(i), 16)
           var diff1: BigInt = key - BigInt.apply(leafSet(i), 16)
@@ -518,7 +518,7 @@ object Worker {
 
    private def updateTablesAsPerNew(senderNodeId: String,  rTable: Array[Array[String]]) {
 
-	   println("Inside updateTablesAsPerNew")
+	   //println("Inside updateTablesAsPerNew")
 	   var ownNode = BigInt.apply((self.path.name), 16) //BigInt values
      var updater = BigInt.apply(senderNodeId, 16)  // BigInt values
      
