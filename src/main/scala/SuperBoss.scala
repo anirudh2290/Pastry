@@ -182,10 +182,10 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
 
       neighbourId = BigIntToHexString(lastInserted)
     }
-    implicit val timeout = Timeout(15 seconds)
-    val future = actr ? join(neighbourId)
-    val result = Await.result(future, timeout.duration).asInstanceOf[Int]
-
+    //implicit val timeout = Timeout(15 seconds)
+    //val future = actr ? join(neighbourId)
+    //val result = Await.result(future, timeout.duration).asInstanceOf[Int]
+    actr ! join(neighbourId)
     //println("Got return for join id :: " + id)
     /*
     val future: Future[Int] = ask(actr, testInit).mapTo[Int]
