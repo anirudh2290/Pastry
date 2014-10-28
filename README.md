@@ -25,9 +25,6 @@ commands(Make sure you are in Pastry-master folder)
 
 sbt runMain project3 numNodes numRequests
 ============================================================================================================================
-The largest network we tried for is 10000 nodes on a dual core machine for all the topologies and algorithms
-
-===========================================================================================================================
 Implementation Details:
 
 Initialisation of the network involves creating actors with randomly generated unique nodeIds to simulate the real world 
