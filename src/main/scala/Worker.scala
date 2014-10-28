@@ -179,7 +179,7 @@ object Worker {
       */
       /*Added by Anirudh Subramanian for testing End*/
       /*Commented by Anirudh Subramanian for testing Begin*/
-      //route("timepass", neighbourId, self.path.name, true, true, 0, false)
+      route("timepass", neighbourId, self.path.name, true, true, 0, false)
       /*Commented by Anirudh Subramanian for testing End*/
     }
     import ac.dispatcher
