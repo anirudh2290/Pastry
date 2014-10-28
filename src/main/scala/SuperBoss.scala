@@ -192,7 +192,6 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     println("Got return for join id :: " + id)
     */
     lastInserted = addedNumber
-    println("result for id " + id + "is " + result )
   }
 
   private def BigIntToHexString(input: BigInt): String = {
