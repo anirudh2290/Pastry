@@ -80,6 +80,16 @@ object Worker {
       sum = sum + i
     }
     */
+    
+    // filling up the corresponding RT entry
+     // Find common prefix between current node and updating node
+     var length:Int =  neighbourIdString.zip(self.path.name).takeWhile(Function.tupled(_ == _)).map(_._1).mkString.size
+     var column:BigInt = BigInt.apply(neighbourIdString.charAt(length).toString(), 16)
+     
+    routingTable(length)(column.intValue()) = neighbourIdString
+    println("NeighbourId: " +neighbourIdString+" added to the RT of "+self.path.name)
+     
+    
     println("neighbourId is " + neighbourId)
     println("sum is " + sum)
     println("Completing testInit")
@@ -227,6 +237,10 @@ object Worker {
         println("Inside hop greater than 0")
         println("="*20)
         rTable.copyToArray(routingTable(hopNo))
+        var i = 0
+        for (i<-0 to rTable.length-1) {
+          println("table: "+rTable(i))
+        }
       }
   }
 
