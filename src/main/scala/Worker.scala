@@ -223,6 +223,9 @@ object Worker {
         println("Node setup done !")
       }
       if(hopNo >= 0) {
+        println("="*20)
+        println("Inside hop greater than 0")
+        println("="*20)
         rTable.copyToArray(routingTable(hopNo))
       }
   }
@@ -257,7 +260,7 @@ object Worker {
                 var nextInRoute   = context.actorSelection(nextInRouteId)
                 var senderNode    = context.actorSelection(senderNodeId)
                 senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, false)
-                nextInRoute ! route(msg, neighbourNodeId, senderNodeId, join, false, updatedHopNumber, true)
+                nextInRoute ! route(msg, "", senderNodeId, join, false, updatedHopNumber, true)
               } else {
                 var senderNode    = context.actorSelection(senderNodeId)
                 senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true)
@@ -274,7 +277,7 @@ object Worker {
                 var nextInRoute = context.actorSelection(nextInRouteId)
                 var senderNode = context.actorSelection(senderNodeId)
                 senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, false)
-                nextInRoute ! route(msg, neighbourNodeId, senderNodeId, join, false, updatedHopNumber, false)
+                nextInRoute ! route(msg, "", senderNodeId, join, false, updatedHopNumber, false)
               } else {
                 var senderNode    = context.actorSelection(senderNodeId)
                 senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true)
@@ -302,7 +305,7 @@ object Worker {
           if(newNode) {
             val neighbouringActor = context.actorSelection(neighbourNodeId)
             print("neighbouringActor is " + neighbouringActor)
-            neighbouringActor ! route(msg, "",senderNodeId, join, false, hopNumber, false)
+            neighbouringActor ! route(msg, "",senderNodeId, false, false, hopNumber, false)
           }
            else {
             var updatedHopNumber = hopNumber + 1
@@ -314,7 +317,7 @@ object Worker {
                 var nextInRouteId = BigIntToHexString(findRoute._1)
                 var nextInRoute   = context.actorSelection(nextInRouteId)
                 var senderNode    = context.actorSelection(senderNodeId)
-                nextInRoute ! route(msg, neighbourNodeId, senderNodeId, join, false, updatedHopNumber, true)
+                nextInRoute ! route(msg, "", senderNodeId, false, false, updatedHopNumber, true)
               } else {
                 var senderNode    = context.actorSelection(senderNodeId)
                 calculateAverageHops(updatedHopNumber)
@@ -329,7 +332,7 @@ object Worker {
                 var nextInRouteId = BigIntToHexString(findRoute._1)
                 var nextInRoute = context.actorSelection(nextInRouteId)
                 var senderNode = context.actorSelection(senderNodeId)
-                nextInRoute ! route(msg, neighbourNodeId, senderNodeId, join, false, updatedHopNumber, false)
+                nextInRoute ! route(msg, "", senderNodeId, false, false, updatedHopNumber, false)
               } else {
                 var senderNode = context.actorSelection(senderNodeId)
                 calculateAverageHops(updatedHopNumber)
