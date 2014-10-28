@@ -196,21 +196,29 @@ object Worker {
         var dummy = leafSetMinus.clone
         leafSetMinus ++= lsMinus
         leafSetPlus ++= lsPlus
+        leafSetMinus = leafSetMinus.sortWith(compfn1)
+        leafSetMinus = leafSetMinus.reverse
+        if(leafSetMinus.size >= leafSetSize)
+          leafSetMinus.reduceToSize(leafSetSize)
+        leafSetMinus = leafSetMinus.sortWith(compfn1)
+        leafSetPlus.sortWith(compfn1)
+        if(leafSetPlus.size >= leafSetSize)
+          leafSetPlus.reduceToSize(leafSetSize)
+        /*
         dummy = leafSetPlus.sortWith(compfn1)
         var i = 0
-        for(i <- 0 to leafSetSize -1) {
-          leafSetPlus(i) = dummy(i)
-        }
+
+        leafSetPlus.reduceToSize(0)
+        leafSetPlus ++= dummy
         leafSetPlus.reduceToSize(leafSetSize)
        
         dummy = leafSetMinus.sortWith(compfn2)
         dummy.reduceToSize(leafSetSize)
         dummy = leafSetMinus.sortWith(compfn1)
-        for(i <- 0 to leafSetSize -1) {
-          leafSetMinus(i) = dummy(i)
-        }
+        leafSetMinus.reduceToSize(0)
+        leafSetMinus ++= dummy
         leafSetMinus.reduceToSize(leafSetSize)
-       
+        */
         println("leafsetPlus" + leafSetPlus)
         println("leafsetPlus" + leafSetMinus)
         println("Node setup done !")
