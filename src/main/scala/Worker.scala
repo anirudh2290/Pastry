@@ -369,6 +369,11 @@ object Worker {
     }
     //Longest Common Prefix size
     var length:Int =  senderNodeId.zip(currentNodeName).takeWhile(Function.tupled(_ == _)).map(_._1).mkString.size
+    println("senderNodeId is " + senderNodeId)
+    println("currentNodeName is " + currentNodeName)
+    println("Accessing character" + length)
+    if(length == 16)
+      return (numericallyClosest, false)
     var column:BigInt = BigInt.apply(senderNodeId.charAt(length).toString(), 16)
     println("="*20)
     println("length is " + length + " column is " + column)
