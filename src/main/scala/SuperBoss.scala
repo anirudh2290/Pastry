@@ -48,6 +48,10 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     var completedActors: Int = 0
     var setupActors: Int = 0
     println("b and base are "+b+" "+base)
+
+    // DR
+    var patternA : BigInt =0
+    var patternB : BigInt =1
     
   def receive = {
    
@@ -154,9 +158,30 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
      
      actr ! "test"
      */
-     var nodeId: BigInt = BigInt.apply(63, scala.util.Random)
-     var addedNumber: BigInt = 0
-     while(hashset.contains(nodeId)) {
+     
+  	//var nodeId = BigInt.apply(63, scala.util.Random)
+  		
+    //DR: create a pattern
+    var nodeId : BigInt =0
+    
+    if (id == 0)
+    patternA = BigInt.apply(63, scala.util.Random)
+    
+    if (id == 1)
+    patternB =BigInt.apply(63, scala.util.Random)
+  	
+  		if (id % 3 == 0) {
+    	   nodeId = patternA+BigInt.apply(15, scala.util.Random)
+       }
+       else if (id % 7 == 0) {
+    	 nodeId = patternB+BigInt.apply(10, scala.util.Random)
+       }
+       else {  		
+         nodeId = BigInt.apply(63, scala.util.Random)
+       }
+  	
+  		var addedNumber: BigInt = 0
+  	   while(hashset.contains(nodeId)) {
        nodeId = BigInt.apply(63, scala.util.Random)
        hashset.add(nodeId)
        addedNumber = nodeId
@@ -170,7 +195,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     var nodeIdString = BigIntToHexString(nodeId)
     //println("hexString " + hexString)
     //println("zeroAppendSize " + zeroAppendSize)
-    //println("nodeIdString " + nodeIdString)
+    println("nodeIdString " + nodeIdString)
     //println("nodeIdString size is " + nodeIdString.size)
     val actr: ActorRef = context.actorOf(
       Worker.props(ac, self, numberNodes, b, numberOfRequests), nodeIdString
@@ -185,6 +210,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     //implicit val timeout = Timeout(15 seconds)
     //val future = actr ? join(neighbourId)
     //val result = Await.result(future, timeout.duration).asInstanceOf[Int]
+    // For 0th actor, it will just add itself to the routing table
     actr ! join(neighbourId)
     //println("Got return for join id :: " + id)
     /*
