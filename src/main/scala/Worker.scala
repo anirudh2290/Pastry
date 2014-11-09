@@ -90,17 +90,34 @@ object Worker {
      var currentNode = self.path.name
      var column:BigInt = 0
      for(i<-0 to currentNode.length - 1) {
-        column = BigInt.apply(currentNode.charAt(i).toString(), 16)
-       routingTable(i)(column.intValue()) = currentNode
+       column = BigInt.apply(currentNode.charAt(i).toString(), 16)
+       if (routingTable(i)(column.intValue()) != currentNode)
+         routingTable(i)(column.intValue()) = currentNode
+       
+      // DR
+      // println("Pushing in the current value "+currentNode+" at "+i+" ,"+column)
+       
      }
      column = BigInt.apply(currentNode.charAt(0).toString(), 16)
     //println(routingTable(0)(column.intValue()))
     //routingTable(length)(column.intValue()) = neighbourIdString
-    println("NeighbourId: " +neighbourIdString+" added to the RT of "+self.path.name)
-     
     
-    println("neighbourId is " + neighbourId)
-    println("sum is " + sum)
+     //DR
+     // adding neighbour node into RT
+    if(neighbourId == "") {
+      // cant do anything
+    }
+    else {
+     var length:Int =  neighbourIdString.zip(currentNode).takeWhile(Function.tupled(_ == _)).map(_._1).mkString.size
+     column = BigInt.apply(neighbourIdString.charAt(length).toString(), 16)
+     routingTable(length)(column.intValue()) = neighbourIdString
+      
+     // DR - working
+     // println("NeighbourId: " +neighbourIdString+" added to the RT of "+self.path.name+"at location "+length+","+column)
+     
+    }
+   // println("neighbourId is " + neighbourId)
+   // println("sum is " + sum)
     println("Completing testInit")
     if(neighbourId == "") {
       println("="*10)
@@ -179,9 +196,10 @@ object Worker {
       */
       /*Added by Anirudh Subramanian for testing End*/
       /*Commented by Anirudh Subramanian for testing Begin*/
+      println("before routing from inside join : "+self.path.name)
       route("timepass", neighbourId, self.path.name, true, true, 0, false)
       /*Commented by Anirudh Subramanian for testing End*/
-    }
+    } // end of else
     import ac.dispatcher
     cancellable = ac.scheduler.schedule(0 seconds, 1 seconds, self, routeRandom())
 
@@ -211,6 +229,7 @@ object Worker {
 
   def updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, currentNodeName: String): Unit = {
       if(finalNode) {
+        println("inside UpdateTables")
         var dummy = leafSetMinus.clone
         leafSetMinus ++= lsMinus
         leafSetPlus ++= lsPlus
@@ -248,34 +267,42 @@ object Worker {
         var column: BigInt = BigInt.apply(currentNodeName.charAt(hopNo).toString(), 16)
         var temp: String   = routingTable(hopNo)(column.intValue())
         rTable.copyToArray(routingTable(hopNo))
+        if(temp != null) {
         routingTable(hopNo)(column.intValue()) = temp
+        }
+        
         var i = 0
         for (i<-0 to rTable.length-1) {
-       //   println("table: "+rTable(i))
+          if(rTable(i)!=null)
+          println("of own : " + self.path.name+" table: "+rTable(i)+ " at " +hopNo+" , "+i)
         }
       }
   }
 
   def route(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean): Unit = {
        var currentNodeName: String = self.path.name
-       println("currentNodeName is " + currentNodeName )
+       //println("Inside route: currentNodeName is " + currentNodeName )
        if(join) {
          if(lastNode) {
+           println("inside route: lastNode for currentNode :"+senderNodeId)
            var updateHopsLast = hopNumber + 1
            var senderNode    = context.actorSelection(senderNodeId)
            senderNode ! updateTables(updateHopsLast - 1, routingTable(updateHopsLast - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
-           println("currentNodeName is " + currentNodeName )
+           //println("currentNodeName is " + currentNodeName )
            println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updateHopsLast )
            sendState()
            return
          }
 
           if(newNode) {
+            println("inside route: newNode for currentNode :"+senderNodeId)
             val neighbouringActor = context.actorSelection(neighbourNodeId)
-            print("neighbouringActor is " + neighbouringActor)
+            print("Inside route : neighbouringActor is " + neighbouringActor)
             neighbouringActor ! route(msg, "",senderNodeId, join, false, hopNumber, false)
           }
           else {
+            // DR
+            println("Entered else loop.")
             var updatedHopNumber = hopNumber + 1
             var findRoute:(BigInt, Boolean) = searchInTables(senderNodeId, currentNodeName)
             //Leafset true
@@ -485,14 +512,19 @@ object Worker {
      }
      return output
    }
+   
    private def sendState() {
      // for each member of the table sets, send own state
+     // DR
+     //println("entered send state")
      var i = 0
      var j = 0
      for(i <- 0 to RTrows-1) {
        for(i <- 0 to RTcols-1) {
     	          
-         if (routingTable(i)(j) != null) {
+         if ((routingTable(i)(j) != null) && (routingTable(i)(j) != self.path.name)) {
+        	 // DR
+        	 //println("Ting ting tidin")
         	 var node = context.actorSelection(routingTable(i)(j))
         	 node ! newNodeState(self.path.name, routingTable)
          }
@@ -500,25 +532,31 @@ object Worker {
      }
      for(i <- 0 to leafSetMinus.size-1) {
        
-       if (leafSetMinus(i) != null) {
-    	   var node = context.actorSelection(leafSetMinus(i))
+       if ((leafSetMinus(i) != null) && (leafSetMinus(i) != self.path.name)) {
+           // DR
+           //println("Ting ting tidin")  
+           var node = context.actorSelection(leafSetMinus(i))
     	   node ! newNodeState(self.path.name, routingTable)
        }
      }
      for(i <- 0 to leafSetPlus.size-1) {
        
-       if (leafSetPlus(i) != null) {
-    	   var node = context.actorSelection(leafSetPlus(i))
+       if ((leafSetPlus(i) != null) && (leafSetPlus(i) != self.path.name)) {
+    	   // DR 
+           //println("Ting ting tidin")
+           var node = context.actorSelection(leafSetPlus(i))
     	   node ! newNodeState(self.path.name, routingTable)
        }
      }
 
      context.actorSelection("..") ! incrementActorcount()
+      // DR
+     println("exit send state")
    }
 
    private def updateTablesAsPerNew(senderNodeId: String,  rTable: Array[Array[String]]) {
 
-	   //println("Inside updateTablesAsPerNew")
+	   println("Inside updateTablesAsPerNew")
 	   var ownNode = BigInt.apply((self.path.name), 16) //BigInt values
      var updater = BigInt.apply(senderNodeId, 16)  // BigInt values
      
