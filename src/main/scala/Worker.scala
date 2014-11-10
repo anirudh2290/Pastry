@@ -71,22 +71,12 @@ object Worker {
   
    def join(senderBoss: ActorRef, neighbourId: String):Unit = {
     neighbourIdString = neighbourId
+    println("--"*25)
+    println("*"*50)
     println("Inside testInit")
     var i = 0
     var sum = 0
-    /*
-    for (i <- 0 to (16-1)) {
-      println("Inside joinOnebyOne")
-      sum = sum + i
-    }
-    */
-    
-    // filling up the corresponding RT entry
-     // Find common prefix between current node and updating node
-     /*
-     var length:Int =  neighbourIdString.zip(self.path.name).takeWhile(Function.tupled(_ == _)).map(_._1).mkString.size
-     var column:BigInt = BigInt.apply(neighbourIdString.charAt(length).toString(), 16)
-     */
+
      var currentNode = self.path.name
      var column:BigInt = 0
      for(i<-0 to currentNode.length - 1) {
@@ -94,30 +84,20 @@ object Worker {
        if (routingTable(i)(column.intValue()) != currentNode)
          routingTable(i)(column.intValue()) = currentNode
        
-      // DR
-      // println("Pushing in the current value "+currentNode+" at "+i+" ,"+column)
-       
+
      }
      column = BigInt.apply(currentNode.charAt(0).toString(), 16)
-    //println(routingTable(0)(column.intValue()))
-    //routingTable(length)(column.intValue()) = neighbourIdString
-    
-     //DR
-     // adding neighbour node into RT
     if(neighbourId == "") {
-      // cant do anything
     }
     else {
-     var length:Int =  neighbourIdString.zip(currentNode).takeWhile(Function.tupled(_ == _)).map(_._1).mkString.size
-     column = BigInt.apply(neighbourIdString.charAt(length).toString(), 16)
-     routingTable(length)(column.intValue()) = neighbourIdString
-      
-     // DR - working
-     // println("NeighbourId: " +neighbourIdString+" added to the RT of "+self.path.name+"at location "+length+","+column)
-     
+       var length:Int =  neighbourIdString.zip(currentNode).takeWhile(Function.tupled(_ == _)).map(_._1).mkString.size
+       println("length of the match is " + length)
+       println("neighbourIdString is " + neighbourIdString)
+       println("currentNode is " + currentNode)
+       column = BigInt.apply(neighbourIdString.charAt(length).toString(), 16)
+       routingTable(length)(column.intValue()) = neighbourIdString
+       println("routingTable value is " + routingTable(length)(column.intValue()) )
     }
-   // println("neighbourId is " + neighbourId)
-   // println("sum is " + sum)
     println("Completing testInit")
     if(neighbourId == "") {
       println("="*10)
@@ -127,83 +107,16 @@ object Worker {
       println("="*10)
       println("Node >= 1")
       println("="*10)
-      /*Added by Anirudh Subramanian for testing Begin*/
-      /*Tests for findMinimumLeafSet*/
-      /*
-      leafSetMinus += "03"
-      leafSetMinus += "04"
-      leafSetMinus += "05"
-      leafSetMinus += "07"
 
-      leafSetPlus += "A"
-      leafSetPlus += "B"
-      leafSetPlus += "C"
-      leafSetPlus += "D"
-      leafSetPlus += "E"
-      println("="*10 + "findMinimumLeafSet output" + "="*10)
-      println(findMinimumLeafSet(12).toString(16))
-      println("="*10 + "findMinimumLeafSet output" + "="*10)
-      */
-      /*findMinimumLeafSet working well*/
-      /*
-      leafSetMinus += "03"
-      leafSetMinus += "04"
-      leafSetMinus += "05"
-      leafSetMinus += "07"
-
-      leafSetPlus += "A"
-      leafSetPlus += "B"
-      leafSetPlus += "C"
-      leafSetPlus += "D"
-      leafSetPlus += "E"
-      println("="*10 + "findMinimumLeafSet output" + "="*10)
-      var find_route = searchInTables("02", "random")
-      println("Tuple value for bigint is " + find_route._1)
-      println("Tuple value for boolean is " + find_route._2)
-      println("="*10 + "findMinimumLeafSet output" + "="*10)
-
-      var currentNode = ""
-      */
-      /*searchInLeft working for leafset*/
-      /*Test for routing table*/
-      /*
-      leafSetMinus += "03"
-      leafSetMinus += "04"
-      leafSetMinus += "05"
-      leafSetMinus += "07"
-
-      leafSetPlus += "A"
-      leafSetPlus += "B"
-      leafSetPlus += "C"
-      leafSetPlus += "D"
-      leafSetPlus += "E"
-
-
-      println("="*10 + "findMinimumLeafSet output" + "="*10)
-      var find_route = searchInTables("04", "random")
-      println("Tuple value for bigint is " + find_route._1)
-      println("Tuple value for boolean is " + find_route._2)
-      println("="*10 + "findMinimumLeafSet output" + "="*10)
-      var currentNode = "4abc678def770224"
-      var searchNode  = "4abc679adf774321"
-      routingTable(6) = Array("4abc670def123456", "4abc671def123456", "4abc672def123456", "4abc673def123456", "4abc674def123456"
-                              , "4abc675def123456", "4abc676def123456", "4abc677def123456", "4abc678def123456", "4abc679def123456"
-                              , "4abc67adef123456", "4abc67bdef123456", "4abc67cdef123456", "4abc67ddef123456", "4abc67edef123456",
-        "4abc67fdef123456")
-      var find_route2 = searchInTables(searchNode, currentNode)
-      println("Tuple for string of hex is " + find_route2._1.toString(16))
-      println("Tuple for boolean is " + find_route2._2)
-      */
-      /*Added by Anirudh Subramanian for testing End*/
-      /*Commented by Anirudh Subramanian for testing Begin*/
       println("before routing from inside join : "+self.path.name)
-      route("timepass", neighbourId, self.path.name, true, true, 0, false)
-      /*Commented by Anirudh Subramanian for testing End*/
-    } // end of else
+      //route("timepass", neighbourId, self.path.name, true, true, 0, false)
+
+    }
     import ac.dispatcher
     cancellable = ac.scheduler.schedule(0 seconds, 1 seconds, self, routeRandom())
-
-    senderBoss ! sum
+    println("*"*50)
+    println("--"*25)
+   // senderBoss ! sum
   }
 
   private def routeRandom(): Unit ={

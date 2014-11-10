@@ -22,7 +22,7 @@ object project3 {
      println("args are "+ numNodes+" "+numRequests);
      
      val system = ActorSystem("super-boss")//, two)
-    
+
      val superbossservice = system.actorOf(SuperBoss.props(numNodes, system, numRequests), "super-boss")
      println("path is " + superbossservice.path)
      superbossservice ! "Hello"
