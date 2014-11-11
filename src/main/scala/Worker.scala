@@ -12,7 +12,7 @@ import com.typesafe.config.ConfigFactory
 
 case class join(neighbourId: String)
 case class updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean)
-case class route(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean)
+case class routeTo(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean)
 case class newNodeState(snId: String, rTable: Array[Array[String]])
 case class getStartedWithRequests()
 
@@ -57,6 +57,7 @@ object Worker {
     case join(neighbourId: String) => join(sender, neighbourId)
     case newNodeState(senderNodeId: String, rTable: Array[Array[String]]) => updateTablesAsPerNew(senderNodeId: String, rTable: Array[Array[String]])
     case getStartedWithRequests() => getStartedWithRequests()
+    case routeTo(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean) =>  route(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean)
     //case default => println("Entered default : Received message "+default);
 
     
@@ -109,17 +110,60 @@ object Worker {
       println("="*10)
 
       println("before routing from inside join : "+self.path.name)
-      //route("timepass", neighbourId, self.path.name, true, true, 0, false)
-
+      self ! routeTo("timepass", neighbourId, self.path.name, true, true, 0, false)
+      //printRoutingTable()
+      //var findRoute:(BigInt, Boolean) = searchInTables(neighbourId, self.path.name)
+      //System.out.println("Search table results id to route to::: " + BigIntToHexString(findRoute._1) )
+      //System.out.println("Search table results is boolean true ::: " + findRoute._2 )
     }
-    import ac.dispatcher
-    cancellable = ac.scheduler.schedule(0 seconds, 1 seconds, self, routeRandom())
+    //import ac.dispatcher
+    //cancellable = ac.scheduler.schedule(0 seconds, 1 seconds, self, routeRandom())
     println("*"*50)
     println("--"*25)
    // senderBoss ! sum
   }
 
+
+  private def printRoutingTable(): Unit = {
+      println("Printing routing table for " + self.path.name)
+      for(i <- 0 to RTrows - 1 ) {
+        System.out.print("Row# "  + i + "---->   ")
+        for(j <- 0 to RTcols - 1 ) {
+
+          System.out.print(routingTable(i)(j))
+          if(j < RTcols - 1)
+            System.out.print("     ")
+        }
+        System.out.println()
+      }
+  }
+
+  private def printPrivateLeafSet(): Unit ={
+    println("Printing leaf set for " + self.path.name)
+    for(i <- 0 to leafSetMinus.length - 1) {
+      if (i == 0) {
+        print("leafSetMinus ------>            ")
+        print(leafSetMinus(i))
+      }
+      else {
+        print(leafSetMinus(i))
+      }
+    }
+    println()
+    for(j <- 0 to leafSetPlus.length - 1) {
+      if (j == 0) {
+        print("leafSetPlus ------>            ")
+        print(leafSetPlus(j))
+      } else {
+        print(leafSetPlus(j))
+      }
+    }
+    println()
+  }
+
   private def routeRandom(): Unit ={
+    //Added for now to not start routeRandom
+    isSetupDone = false
     if (isSetupDone) {
       if(routeMessageCount == numberOfRequest) {
         cancellable.cancel()
@@ -185,10 +229,16 @@ object Worker {
         }
         
         var i = 0
+
+        /*
         for (i<-0 to rTable.length-1) {
           if(rTable(i)!=null)
           println("of own : " + self.path.name+" table: "+rTable(i)+ " at " +hopNo+" , "+i)
         }
+        */
+        printRoutingTable()
+        printRoutingTable()
+        printPrivateLeafSet()
       }
   }
 
@@ -199,59 +249,61 @@ object Worker {
          if(lastNode) {
            println("inside route: lastNode for currentNode :"+senderNodeId)
            var updateHopsLast = hopNumber + 1
-           var senderNode    = context.actorSelection(senderNodeId)
+           var senderNode    = context.actorSelection("../" + senderNodeId)
            senderNode ! updateTables(updateHopsLast - 1, routingTable(updateHopsLast - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
            //println("currentNodeName is " + currentNodeName )
            println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updateHopsLast )
            sendState()
-           return
          }
 
           if(newNode) {
             println("inside route: newNode for currentNode :"+senderNodeId)
-            val neighbouringActor = context.actorSelection(neighbourNodeId)
+            println("neighbournodeid is " + neighbourNodeId)
+            val neighbouringActor = context.actorSelection("../" + neighbourNodeId)
             print("Inside route : neighbouringActor is " + neighbouringActor)
-            neighbouringActor ! route(msg, "",senderNodeId, join, false, hopNumber, false)
+            println("Routing to :::::::::::::" + neighbouringActor.pathString)
+            neighbouringActor ! routeTo(msg, "",senderNodeId, join, false, hopNumber, false)
           }
           else {
             // DR
             println("Entered else loop.")
             var updatedHopNumber = hopNumber + 1
+            println("self path name is  " + self.path.name)
             var findRoute:(BigInt, Boolean) = searchInTables(senderNodeId, currentNodeName)
+            println("findroute._1 is " + findRoute._1)
+            println("findroute._2 is " + findRoute._2)
             //Leafset true
             if(findRoute._2) {
               /*If not null route to that node with minimum */
               if(findRoute._1 != null) {
                 var nextInRouteId = BigIntToHexString(findRoute._1)
-                var nextInRoute   = context.actorSelection(nextInRouteId)
-                var senderNode    = context.actorSelection(senderNodeId)
+                var nextInRoute   = context.actorSelection("../" + nextInRouteId)
+                var senderNode    = context.actorSelection("../" + senderNodeId)
                 senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, false, currentNodeName)
-                nextInRoute ! route(msg, "", senderNodeId, join, false, updatedHopNumber, true)
+                nextInRoute ! routeTo(msg, "", senderNodeId, join, false, updatedHopNumber, true)
               } else {
-                var senderNode    = context.actorSelection(senderNodeId)
+                var senderNode    = context.actorSelection("../" + senderNodeId)
                 senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
                 println("Nearest key " + currentNodeName)
                 println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber )
                 sendState()
-                return
               }
               /*If null then print the hopping ends here*/
               println("")
             } else {
               if (findRoute._1 != null) {
                 var nextInRouteId = BigIntToHexString(findRoute._1)
-                var nextInRoute = context.actorSelection(nextInRouteId)
-                var senderNode = context.actorSelection(senderNodeId)
+                var nextInRoute = context.actorSelection("../" + nextInRouteId)
+                var senderNode = context.actorSelection("../" + senderNodeId)
                 senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, false, currentNodeName)
-                nextInRoute ! route(msg, "", senderNodeId, join, false, updatedHopNumber, false)
+                nextInRoute ! routeTo(msg, "", senderNodeId, join, false, updatedHopNumber, false)
               } else {
-                var senderNode    = context.actorSelection(senderNodeId)
+                var senderNode    = context.actorSelection("../" + senderNodeId)
                 senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
 
                 println("Nearest key " + currentNodeName)
                 println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber )
                 sendState()
-                return
               }
 
             }
@@ -261,17 +313,17 @@ object Worker {
          //not join.. so normal routing
          if(lastNode) {
            var updateHopsLast = hopNumber + 1
-           var senderNode    = context.actorSelection(senderNodeId)
+           var senderNode    = context.actorSelection("../" + senderNodeId)
            println("Nearest key " + currentNodeName)
            println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updateHopsLast )
-           calculateAverageHops(updateHopsLast)
+           //calculateAverageHops(updateHopsLast)
            return
          }
          else {
           if(newNode) {
-            val neighbouringActor = context.actorSelection(neighbourNodeId)
+            val neighbouringActor = context.actorSelection("../" + neighbourNodeId)
             print("neighbouringActor is " + neighbouringActor)
-            neighbouringActor ! route(msg, "",senderNodeId, false, false, hopNumber, false)
+            neighbouringActor ! routeTo(msg, "",senderNodeId, false, false, hopNumber, false)
           }
            else {
             var updatedHopNumber = hopNumber + 1
@@ -281,12 +333,12 @@ object Worker {
               /*If not null route to that node with minimum */
               if(findRoute._1 != null) {
                 var nextInRouteId = BigIntToHexString(findRoute._1)
-                var nextInRoute   = context.actorSelection(nextInRouteId)
-                var senderNode    = context.actorSelection(senderNodeId)
-                nextInRoute ! route(msg, "", senderNodeId, false, false, updatedHopNumber, true)
+                var nextInRoute   = context.actorSelection("../" + nextInRouteId)
+                var senderNode    = context.actorSelection("../" + senderNodeId)
+                nextInRoute ! routeTo(msg, "", senderNodeId, false, false, updatedHopNumber, true)
               } else {
-                var senderNode    = context.actorSelection(senderNodeId)
-                calculateAverageHops(updatedHopNumber)
+                var senderNode    = context.actorSelection("../" + senderNodeId)
+                //calculateAverageHops(updatedHopNumber)
                 println("Nearest key " + currentNodeName)
                 println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber  )
                 return
@@ -296,12 +348,12 @@ object Worker {
             } else {
               if (findRoute._1 != null) {
                 var nextInRouteId = BigIntToHexString(findRoute._1)
-                var nextInRoute = context.actorSelection(nextInRouteId)
-                var senderNode = context.actorSelection(senderNodeId)
-                nextInRoute ! route(msg, "", senderNodeId, false, false, updatedHopNumber, false)
+                var nextInRoute = context.actorSelection("../" + nextInRouteId)
+                var senderNode = context.actorSelection("../" + senderNodeId)
+                nextInRoute ! routeTo(msg, "", senderNodeId, false, false, updatedHopNumber, false)
               } else {
-                var senderNode = context.actorSelection(senderNodeId)
-                calculateAverageHops(updatedHopNumber)
+                var senderNode = context.actorSelection("../" + senderNodeId)
+                //calculateAverageHops(updatedHopNumber)
                 println("Nearest key " + currentNodeName)
                 println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber  )
                 return
@@ -314,9 +366,9 @@ object Worker {
   }
 
   def searchInTables(senderNodeId: String, currentNodeName: String): (BigInt, Boolean) = {
-   var searchInMinLeaf: Boolean = false
    var searchInMaxLeaf: Boolean = false
-   var min: BigInt = Long.MaxValue
+    var searchInMinLeaf: Boolean = false
+    var min: BigInt = Long.MaxValue
    var max: BigInt = Long.MinValue
    var numericallyClosest: BigInt = null
    var minLeft: Int = 0
@@ -438,7 +490,7 @@ object Worker {
          if ((routingTable(i)(j) != null) && (routingTable(i)(j) != self.path.name)) {
         	 // DR
         	 //println("Ting ting tidin")
-        	 var node = context.actorSelection(routingTable(i)(j))
+        	 var node = context.actorSelection("../" + routingTable(i)(j))
         	 node ! newNodeState(self.path.name, routingTable)
          }
        }
@@ -448,7 +500,7 @@ object Worker {
        if ((leafSetMinus(i) != null) && (leafSetMinus(i) != self.path.name)) {
            // DR
            //println("Ting ting tidin")  
-           var node = context.actorSelection(leafSetMinus(i))
+           var node = context.actorSelection("../" + leafSetMinus(i))
     	   node ! newNodeState(self.path.name, routingTable)
        }
      }
@@ -457,7 +509,7 @@ object Worker {
        if ((leafSetPlus(i) != null) && (leafSetPlus(i) != self.path.name)) {
     	   // DR 
            //println("Ting ting tidin")
-           var node = context.actorSelection(leafSetPlus(i))
+           var node = context.actorSelection("../" + leafSetPlus(i))
     	   node ! newNodeState(self.path.name, routingTable)
        }
      }

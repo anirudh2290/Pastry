@@ -96,7 +96,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
          println("hashset size is" + hashset.size)
          actorsArray = hashset.toArray
          import ac.dispatcher
-         cancellable2 = ac.scheduler.schedule(0 milliseconds, 10 milliseconds, self, joinCalls())
+         cancellable2 = ac.scheduler.schedule(0 milliseconds, 1000 milliseconds, self, joinCalls())
 
        }
      }
