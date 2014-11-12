@@ -11,7 +11,7 @@ import scala.concurrent.duration._
 import com.typesafe.config.ConfigFactory
 
 case class join(neighbourId: String)
-case class updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean)
+case class updateTablesTo(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, senderNodeName: String)
 case class routeTo(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean)
 case class newNodeState(snId: String, rTable: Array[Array[String]])
 case class getStartedWithRequests()
@@ -58,6 +58,7 @@ object Worker {
     case newNodeState(senderNodeId: String, rTable: Array[Array[String]]) => updateTablesAsPerNew(senderNodeId: String, rTable: Array[Array[String]])
     case getStartedWithRequests() => getStartedWithRequests()
     case routeTo(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean) =>  route(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean)
+    case updateTablesTo(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, senderNodeName: String) => updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, senderNodeName: String)
     //case default => println("Entered default : Received message "+default);
 
     
@@ -184,9 +185,9 @@ object Worker {
      nodeIdString
    }
 
-  def updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, currentNodeName: String): Unit = {
+  def updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, senderNodeName: String): Unit = {
       if(finalNode) {
-        println("inside UpdateTables")
+        println("inside UpdateTables for " + self.path.name)
         var dummy = leafSetMinus.clone
         leafSetMinus ++= lsMinus
         leafSetPlus ++= lsPlus
@@ -220,9 +221,23 @@ object Worker {
       if(hopNo >= 0) {
         println("="*20)
         println("Inside hop greater than 0")
+        println("hopNo is " + hopNo)
         println("="*20)
+        var currentNodeName: String = self.path.name
+        println("Inside update tables path name value is  " + currentNodeName)
         var column: BigInt = BigInt.apply(currentNodeName.charAt(hopNo).toString(), 16)
+        /*TODO || Consider this . The neighbour can have a match of more than one character with the currentNode. The paper assumes
+          TODO || the general case wherein there is no match. This may not always be true. Have to handle this in the future
+        */
         var temp: String   = routingTable(hopNo)(column.intValue())
+        println("Inside updateTables temp value is " + temp)
+        println("inside updateTables ")
+        println("row received from " + senderNodeName)
+        for(i <-0 to rTable.length - 1) {
+          print(rTable(i))
+          print("               ")
+        }
+        println()
         rTable.copyToArray(routingTable(hopNo))
         if(temp != null) {
         routingTable(hopNo)(column.intValue()) = temp
@@ -250,7 +265,7 @@ object Worker {
            println("inside route: lastNode for currentNode :"+senderNodeId)
            var updateHopsLast = hopNumber + 1
            var senderNode    = context.actorSelection("../" + senderNodeId)
-           senderNode ! updateTables(updateHopsLast - 1, routingTable(updateHopsLast - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
+           senderNode ! updateTablesTo(updateHopsLast - 1, routingTable(updateHopsLast - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
            //println("currentNodeName is " + currentNodeName )
            println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updateHopsLast )
            sendState()
@@ -279,11 +294,11 @@ object Worker {
                 var nextInRouteId = BigIntToHexString(findRoute._1)
                 var nextInRoute   = context.actorSelection("../" + nextInRouteId)
                 var senderNode    = context.actorSelection("../" + senderNodeId)
-                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, false, currentNodeName)
+                senderNode ! updateTablesTo(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, false, currentNodeName)
                 nextInRoute ! routeTo(msg, "", senderNodeId, join, false, updatedHopNumber, true)
               } else {
                 var senderNode    = context.actorSelection("../" + senderNodeId)
-                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
+                senderNode ! updateTablesTo(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
                 println("Nearest key " + currentNodeName)
                 println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber )
                 sendState()
@@ -295,11 +310,11 @@ object Worker {
                 var nextInRouteId = BigIntToHexString(findRoute._1)
                 var nextInRoute = context.actorSelection("../" + nextInRouteId)
                 var senderNode = context.actorSelection("../" + senderNodeId)
-                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, false, currentNodeName)
+                senderNode ! updateTablesTo(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, false, currentNodeName)
                 nextInRoute ! routeTo(msg, "", senderNodeId, join, false, updatedHopNumber, false)
               } else {
                 var senderNode    = context.actorSelection("../" + senderNodeId)
-                senderNode ! updateTables(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
+                senderNode ! updateTablesTo(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
 
                 println("Nearest key " + currentNodeName)
                 println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber )
