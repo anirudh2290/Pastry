@@ -568,7 +568,7 @@ object Worker {
      //If senderId falls in leafset
      //if left set
     if ((leafSetMinus.size == 0) &&  (updater<ownNode)) {
-    	leafSetMinus(0) = senderNodeId
+    	leafSetMinus += senderNodeId
     	println("First nodeID:"+ senderNodeId+" added to leaf table minus of "+ self.path.name)
       }
     else if (((BigInt.apply(leafSetMinus(0), 16)) <  updater) && (ownNode >  updater)) {
@@ -599,7 +599,7 @@ object Worker {
 
      // if right set
 	   if ((leafSetPlus.size == 0) &&  (updater>ownNode)) {
-	       leafSetPlus(0) = senderNodeId
+	       leafSetPlus += senderNodeId
 	       println("First nodeID:"+ senderNodeId+" added to leaf table plus of "+ self.path.name)
 	  }
 	else if ((ownNode <  updater) && (updater <  (BigInt.apply(leafSetPlus(leafSetPlus.size-1), 16)))) {
