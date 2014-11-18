@@ -79,6 +79,7 @@ object Worker {
     var i = 0
     var sum = 0
 
+    // Adding self to RT
      var currentNode = self.path.name
      var column:BigInt = 0
      for(i<-0 to currentNode.length - 1) {
@@ -99,6 +100,18 @@ object Worker {
        column = BigInt.apply(neighbourIdString.charAt(length).toString(), 16)
        routingTable(length)(column.intValue()) = neighbourIdString
        println("routingTable value is " + routingTable(length)(column.intValue()) )
+       
+       println("########################### Adding neighbour to LeafTable ###################################")
+       if(BigInt.apply(neighbourIdString, 16) < (BigInt.apply(currentNode, 16)))
+           {
+    	   		println("Trying to insert in left + "+ neighbourIdString)
+    	   		leafSetMinus += neighbourIdString
+           }
+       else if(BigInt.apply(neighbourIdString, 16) > (BigInt.apply(currentNode, 16))){
+           println("Trying to insert in right + "+ neighbourIdString)		
+    	   leafSetPlus += neighbourIdString
+       }
+        
     }
     println("Completing testInit")
     if(neighbourId == "") {
@@ -144,19 +157,19 @@ object Worker {
     for(i <- 0 to leafSetMinus.length - 1) {
       if (i == 0) {
         print("leafSetMinus ------>            ")
-        print(leafSetMinus(i))
+        print(leafSetMinus(i) + " ")
       }
       else {
-        print(leafSetMinus(i))
+        print(leafSetMinus(i)+ " ")
       }
     }
     println()
     for(j <- 0 to leafSetPlus.length - 1) {
       if (j == 0) {
         print("leafSetPlus ------>            ")
-        print(leafSetPlus(j))
+        print(leafSetPlus(j)+ " ")
       } else {
-        print(leafSetPlus(j))
+        print(leafSetPlus(j)+ " ")
       }
     }
     println()
@@ -188,6 +201,19 @@ object Worker {
   def updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, senderNodeName: String): Unit = {
       if(finalNode) {
         println("inside UpdateTables for " + self.path.name)
+        if(lsPlus.size != 0) {
+        	println("inside UpdateTables - lsPlus " + lsPlus(lsPlus.size-1))
+        }
+        else {
+          println("inside UpdateTables - lsPlus size = 0 ")
+        }
+        if(lsMinus.size != 0) {
+        	println("inside UpdateTables - lsMinus " + lsMinus(lsMinus.size-1))
+        }
+        else {
+          println("inside UpdateTables - lsMinus size = 0 ")
+        }
+        
         var dummy = leafSetMinus.clone
         leafSetMinus ++= lsMinus
         leafSetPlus ++= lsPlus
@@ -250,7 +276,7 @@ object Worker {
           println("of own : " + self.path.name+" table: "+rTable(i)+ " at " +hopNo+" , "+i)
         }
         */
-        printRoutingTable()
+        
         printRoutingTable()
         printPrivateLeafSet()
       }
