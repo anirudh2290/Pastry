@@ -219,6 +219,8 @@ object Worker {
         var dummy = leafSetMinus.clone
         leafSetMinus ++= lsMinus
         leafSetPlus ++= lsPlus
+        leafSetPlus = leafSetPlus.distinct
+        leafSetMinus = leafSetMinus.distinct
         leafSetMinus = leafSetMinus.sortWith(compfn1)
         leafSetMinus = leafSetMinus.reverse
         if(leafSetMinus.size >= ideal_leafSetSize)
