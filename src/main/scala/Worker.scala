@@ -221,6 +221,9 @@ object Worker {
         leafSetPlus ++= lsPlus
         leafSetPlus = leafSetPlus.distinct
         leafSetMinus = leafSetMinus.distinct
+        var p:BigInt = BigInt.apply(self.path.name, 16)
+        leafSetMinus = leafSetMinus.filter(x => BigInt.apply(x, 16) < p)
+        leafSetPlus  = leafSetPlus.filter(x => BigInt.apply(x, 16) > p)
         leafSetMinus = leafSetMinus.sortWith(compfn1)
         leafSetMinus = leafSetMinus.reverse
         if(leafSetMinus.size >= ideal_leafSetSize)
