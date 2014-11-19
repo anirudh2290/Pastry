@@ -91,6 +91,7 @@ object Worker {
        
 
      }
+
      column = BigInt.apply(currentNode.charAt(0).toString(), 16)
     if(neighbourId == "") {
     }
@@ -471,6 +472,15 @@ object Worker {
       var output: BigInt = null
      // println("maxLeft is " + maxLeft)
      // println("minRight is " + minRight)
+     var leftMostOfLeft: Int = 0
+     var rightMostOfRight: Int = leafSetPlus.size - 1
+     var minLeft = BigInt.apply(leafSetMinus(leftMostOfLeft), 16)
+     var maxRight = BigInt.apply(leafSetPlus(rightMostOfRight), 16)
+
+     if(key < minLeft || key > maxRight) {
+        return output
+     }
+
       if(maxLeft <= key && key <= minRight) {
     //    println("Inside key greater than maxLeft and less than minRight")
         var diff: BigInt = key - maxLeft
