@@ -564,74 +564,57 @@ object Worker {
 
    private def updateTablesAsPerNew(senderNodeId: String,  rTable: Array[Array[String]]) {
 
-
-
-	   println("Inside updateTablesAsPerNew")
-	   var ownNode = BigInt.apply((self.path.name), 16) //BigInt values
+	 var ownNode = BigInt.apply((self.path.name), 16) //BigInt values
      var updater = BigInt.apply(senderNodeId, 16)  // BigInt values
+     println("Inside updateTablesAsPerNew")
+     println("ownNode = "+self.path.name)
+     println("updater = "+senderNodeId)
+     println("sizes = "+leafSetMinus.size+" "+leafSetPlus.size)
      var end: Int = 0
      //If senderId falls in leafset
      //if left set
-    if ((leafSetMinus.size == 0) &&  (updater<ownNode)) {
+     if ((leafSetMinus.size == 0) &&  (updater<ownNode)) {
     	leafSetMinus += senderNodeId
+        //leafSetMinus.append(senderNodeId)
     	println("First nodeID:"+ senderNodeId+" added to leaf table minus of "+ self.path.name)
       }
     else if (((BigInt.apply(leafSetMinus(0), 16)) <  updater) && (ownNode >  updater)) {
-       var dummy = leafSetMinus.clone
-       var i = leafSetMinus.size-1
-       var j = 0
-       while(updater < (BigInt.apply(leafSetMinus(i), 16))) {
-         i -= 1
-       }
-       dummy(i) = BigIntToHexString(updater)
-      
-       if(leafSetMinus.size < ideal_leafSetSize) {
-         end = 0;
-       }
-       else {
-         end = 1;
-       }
-      
-        // put values from i...1 --> i-1..0
-       for(j <- i to end by 1) {
-         if(leafSetMinus(j) != null) {
-           dummy(j-1) = leafSetMinus(j)
-         }
-       }
-       leafSetMinus = dummy.clone
+       println("Inside left leaf table else loop: ")
+
+
+        if((leafSetMinus.contains(senderNodeId))) {
+        leafSetMinus += senderNodeId
+        leafSetMinus = leafSetMinus.sortWith(compfn2)
+        
+        if(leafSetMinus.size >= ideal_leafSetSize) {
+          leafSetMinus.reduceToSize(ideal_leafSetSize)
+        }
+        leafSetMinus = leafSetMinus.sortWith(compfn1)
+        }
      }
 
 
      // if right set
 	   if ((leafSetPlus.size == 0) &&  (updater>ownNode)) {
+	       //leafSetPlus.append(senderNodeId)
 	       leafSetPlus += senderNodeId
 	       println("First nodeID:"+ senderNodeId+" added to leaf table plus of "+ self.path.name)
 	  }
 	else if ((ownNode <  updater) && (updater <  (BigInt.apply(leafSetPlus(leafSetPlus.size-1), 16)))) {
-       var dummy = leafSetPlus.clone
-       var i = 0
-       var j = 0
-       while(updater > (BigInt.apply(leafSetPlus(i), 16))) {
-         i += 1
-       }
-       dummy(i) = BigIntToHexString(updater)
-       
-       if(leafSetPlus.size < ideal_leafSetSize) {
-         end = leafSetPlus.size-1;
-       }
-       else {
-         end = leafSetPlus.size-2;
-       }
-       // put values from i...size-2 --> i+1..size-1
-       for(j <- i to end) {
-         if(leafSetPlus(j) != null) {
-           dummy(j+1) = leafSetMinus(j)
-         }
-       }
-       leafSetPlus = dummy.clone
-     }
+      println("Inside right leaf table else loop: ") 
+     if(!(leafSetPlus.contains(senderNodeId))) {  
 
-     // if routing table
+      leafSetPlus += senderNodeId
+      leafSetPlus.sortWith(compfn1)
+      if(leafSetPlus.size >= ideal_leafSetSize) {
+    	  leafSetPlus.reduceToSize(ideal_leafSetSize)
+      }
+     } 
+     }
+	   
+	 println("New leaflet sizes = "+leafSetMinus.size+" "+leafSetPlus.size)
+     
+	 // if routing table
      //Longest Common Prefix size
      var i = 0
      var j = 0
@@ -662,8 +645,8 @@ object Worker {
          }
        }
      }
-
    }
 
 
- }  
+
+ }
