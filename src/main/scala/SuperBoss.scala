@@ -103,6 +103,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
 
      def initiateJoinCalls(): Unit = {
        if(joinCallNumber == numberNodes) {
+         cancellable.cancel()
          cancellable2.cancel()
          println("Inside cancellable2 cancel")
        }

@@ -578,7 +578,7 @@ object Worker {
         //leafSetMinus.append(senderNodeId)
     	println("First nodeID:"+ senderNodeId+" added to leaf table minus of "+ self.path.name)
       }
-    else if (((BigInt.apply(leafSetMinus(0), 16)) <  updater) && (ownNode >  updater)) {
+    else if ((leafSetMinus.size > 0) && ((BigInt.apply(leafSetMinus(0), 16)) <  updater) && (ownNode >  updater)) {
        println("Inside left leaf table else loop: ")
 
 
@@ -600,7 +600,7 @@ object Worker {
 	       leafSetPlus += senderNodeId
 	       println("First nodeID:"+ senderNodeId+" added to leaf table plus of "+ self.path.name)
 	  }
-	else if ((ownNode <  updater) && (updater <  (BigInt.apply(leafSetPlus(leafSetPlus.size-1), 16)))) {
+	else if ((leafSetPlus.size > 0) && (ownNode <  updater) && (updater <  (BigInt.apply(leafSetPlus(leafSetPlus.size-1), 16)))) {
       println("Inside right leaf table else loop: ") 
      if(!(leafSetPlus.contains(senderNodeId))) {  
 
