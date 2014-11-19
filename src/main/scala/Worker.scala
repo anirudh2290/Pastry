@@ -440,7 +440,7 @@ object Worker {
 
     if(searchInMinLeaf || searchInMaxLeaf) {
       if (min <= key && key <= max) {
-        numericallyClosest = findMinimumLeafSet(key)
+        numericallyClosest = findMinimumLeafSet(key, searchInMinLeaf, searchInMaxLeaf)
         if(numericallyClosest != null) {
           return (numericallyClosest, true)
         }
@@ -464,18 +464,49 @@ object Worker {
     return(numericallyClosest, false)
   }
 
-   private def findMinimumLeafSet(key: BigInt): BigInt = {
+   private def findMinimumLeafSet(key: BigInt, searchMinimum: Boolean, searchMaximum: Boolean): BigInt = {
+
+      /*
       var rightMostOfLeft: Int = leafSetMinus.size - 1
       var leftMostOfRight: Int = 0
       var maxLeft = BigInt.apply(leafSetMinus(rightMostOfLeft), 16)
       var minRight = BigInt.apply(leafSetPlus(leftMostOfRight), 16)
       var output: BigInt = null
-     // println("maxLeft is " + maxLeft)
-     // println("minRight is " + minRight)
      var leftMostOfLeft: Int = 0
      var rightMostOfRight: Int = leafSetPlus.size - 1
      var minLeft = BigInt.apply(leafSetMinus(leftMostOfLeft), 16)
      var maxRight = BigInt.apply(leafSetPlus(rightMostOfRight), 16)
+      */
+      var output: BigInt = null
+      var rightMostOfLeft: Int = leafSetMinus.size - 1
+     var leftMostOfRight: Int = 0
+     var leftMostOfLeft: Int = 0
+     var rightMostOfRight: Int = leafSetPlus.size - 1
+      var maxLeft: BigInt = Long.MinValue
+     var minLeft: BigInt = Long.MaxValue
+     var minRight: BigInt = Long.MaxValue
+     var maxRight: BigInt = Long.MinValue
+     if(leafSetMinus.size != 0) {
+       maxLeft = BigInt.apply(leafSetMinus(rightMostOfLeft), 16)
+       minLeft = BigInt.apply(leafSetMinus(leftMostOfLeft), 16)
+     }
+
+
+     if(leafSetPlus.size != 0) {
+       minRight = BigInt.apply(leafSetPlus(leftMostOfRight), 16)
+       maxRight = BigInt.apply(leafSetPlus(rightMostOfRight), 16)
+     }
+
+
+     if(!searchMinimum){
+        maxLeft = minRight
+        minLeft = minRight
+     }
+
+     if(!searchMaximum) {
+       minRight = maxLeft
+       maxRight = maxLeft
+     }
 
      if(key < minLeft || key > maxRight) {
         return output
