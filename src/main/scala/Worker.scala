@@ -15,6 +15,7 @@ case class updateTablesTo(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffe
 case class routeTo(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean)
 case class newNodeState(snId: String, rTable: Array[Array[String]])
 case class getStartedWithRequests()
+case class sendStateTo()
 
 object Worker {
     
@@ -59,6 +60,7 @@ object Worker {
     case getStartedWithRequests() => getStartedWithRequests()
     case routeTo(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean) =>  route(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean)
     case updateTablesTo(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, senderNodeName: String) => updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, senderNodeName: String)
+    case sendStateTo() => sendState()
     //case default => println("Entered default : Received message "+default);
 
     
@@ -293,7 +295,7 @@ object Worker {
            senderNode ! updateTablesTo(updateHopsLast - 1, routingTable(updateHopsLast - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
            //println("currentNodeName is " + currentNodeName )
            println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updateHopsLast )
-           sendState()
+           self ! sendStateTo()
          }
 
           if(newNode) {
@@ -326,7 +328,7 @@ object Worker {
                 senderNode ! updateTablesTo(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
                 println("Nearest key " + currentNodeName)
                 println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber )
-                sendState()
+                self ! sendStateTo()
               }
               /*If null then print the hopping ends here*/
               println("")
@@ -343,7 +345,7 @@ object Worker {
 
                 println("Nearest key " + currentNodeName)
                 println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber )
-                sendState()
+                self ! sendStateTo()
               }
 
             }
@@ -562,6 +564,8 @@ object Worker {
 
    private def updateTablesAsPerNew(senderNodeId: String,  rTable: Array[Array[String]]) {
 
+
+
 	   println("Inside updateTablesAsPerNew")
 	   var ownNode = BigInt.apply((self.path.name), 16) //BigInt values
      var updater = BigInt.apply(senderNodeId, 16)  // BigInt values
@@ -658,5 +662,8 @@ object Worker {
          }
        }
      }
+
    }
+
+
  }  
