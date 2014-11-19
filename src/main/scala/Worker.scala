@@ -40,7 +40,7 @@ object Worker {
   //var leafSetPlus  = Array.ofDim[String](RTcols/2)
   var leafSetMinus:ArrayBuffer[String] = new ArrayBuffer[String]
   var leafSetPlus:ArrayBuffer[String] = new ArrayBuffer[String]
-  var leafSetSize: Int = 8
+  var ideal_leafSetSize: Int = 8
   var leafMinusIndex: Int = 0
   var leafPlusIndex: Int = 0
   var neighbourIdString: String = ""
@@ -79,6 +79,7 @@ object Worker {
     var i = 0
     var sum = 0
 
+    // Adding self to RT
      var currentNode = self.path.name
      var column:BigInt = 0
      for(i<-0 to currentNode.length - 1) {
@@ -99,6 +100,18 @@ object Worker {
        column = BigInt.apply(neighbourIdString.charAt(length).toString(), 16)
        routingTable(length)(column.intValue()) = neighbourIdString
        println("routingTable value is " + routingTable(length)(column.intValue()) )
+       
+       println("########################### Adding neighbour to LeafTable ###################################")
+       if(BigInt.apply(neighbourIdString, 16) < (BigInt.apply(currentNode, 16)))
+           {
+    	   		println("Trying to insert in left + "+ neighbourIdString)
+    	   		leafSetMinus += neighbourIdString
+           }
+       else if(BigInt.apply(neighbourIdString, 16) > (BigInt.apply(currentNode, 16))){
+           println("Trying to insert in right + "+ neighbourIdString)		
+    	   leafSetPlus += neighbourIdString
+       }
+        
     }
     println("Completing testInit")
     if(neighbourId == "") {
@@ -144,19 +157,19 @@ object Worker {
     for(i <- 0 to leafSetMinus.length - 1) {
       if (i == 0) {
         print("leafSetMinus ------>            ")
-        print(leafSetMinus(i))
+        print(leafSetMinus(i) + " ")
       }
       else {
-        print(leafSetMinus(i))
+        print(leafSetMinus(i)+ " ")
       }
     }
     println()
     for(j <- 0 to leafSetPlus.length - 1) {
       if (j == 0) {
         print("leafSetPlus ------>            ")
-        print(leafSetPlus(j))
+        print(leafSetPlus(j)+ " ")
       } else {
-        print(leafSetPlus(j))
+        print(leafSetPlus(j)+ " ")
       }
     }
     println()
@@ -188,31 +201,43 @@ object Worker {
   def updateTables(hopNo: Int, rTable: Array[String], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, senderNodeName: String): Unit = {
       if(finalNode) {
         println("inside UpdateTables for " + self.path.name)
+        if(lsPlus.size != 0) {
+        	println("inside UpdateTables - lsPlus " + lsPlus(lsPlus.size-1))
+        }
+        else {
+          println("inside UpdateTables - lsPlus size = 0 ")
+        }
+        if(lsMinus.size != 0) {
+        	println("inside UpdateTables - lsMinus " + lsMinus(lsMinus.size-1))
+        }
+        else {
+          println("inside UpdateTables - lsMinus size = 0 ")
+        }
+        
         var dummy = leafSetMinus.clone
         leafSetMinus ++= lsMinus
         leafSetPlus ++= lsPlus
         leafSetMinus = leafSetMinus.sortWith(compfn1)
         leafSetMinus = leafSetMinus.reverse
-        if(leafSetMinus.size >= leafSetSize)
-          leafSetMinus.reduceToSize(leafSetSize)
+        if(leafSetMinus.size >= ideal_leafSetSize)
+          leafSetMinus.reduceToSize(ideal_leafSetSize)
         leafSetMinus = leafSetMinus.sortWith(compfn1)
         leafSetPlus.sortWith(compfn1)
-        if(leafSetPlus.size >= leafSetSize)
-          leafSetPlus.reduceToSize(leafSetSize)
+        if(leafSetPlus.size >= ideal_leafSetSize)
+          leafSetPlus.reduceToSize(ideal_leafSetSize)
         /*
         dummy = leafSetPlus.sortWith(compfn1)
         var i = 0
-
         leafSetPlus.reduceToSize(0)
         leafSetPlus ++= dummy
-        leafSetPlus.reduceToSize(leafSetSize)
+        leafSetPlus.reduceToSize(ideal_leafSetSize)
        
         dummy = leafSetMinus.sortWith(compfn2)
-        dummy.reduceToSize(leafSetSize)
+        dummy.reduceToSize(ideal_leafSetSize)
         dummy = leafSetMinus.sortWith(compfn1)
         leafSetMinus.reduceToSize(0)
         leafSetMinus ++= dummy
-        leafSetMinus.reduceToSize(leafSetSize)
+        leafSetMinus.reduceToSize(ideal_leafSetSize)
         */
       //  println("leafsetPlus : " + leafSetPlus)
       //  println("leafsetPlus : " + leafSetMinus)
@@ -251,7 +276,7 @@ object Worker {
           println("of own : " + self.path.name+" table: "+rTable(i)+ " at " +hopNo+" , "+i)
         }
         */
-        printRoutingTable()
+        
         printRoutingTable()
         printPrivateLeafSet()
       }
@@ -505,7 +530,7 @@ object Worker {
     	          
          if ((routingTable(i)(j) != null) && (routingTable(i)(j) != self.path.name)) {
         	 // DR
-        	 //println("Ting ting tidin")
+        	 // println("Ting ting tidin")
         	 var node = context.actorSelection("../" + routingTable(i)(j))
         	 node ! newNodeState(self.path.name, routingTable)
          }
@@ -540,11 +565,11 @@ object Worker {
 	   println("Inside updateTablesAsPerNew")
 	   var ownNode = BigInt.apply((self.path.name), 16) //BigInt values
      var updater = BigInt.apply(senderNodeId, 16)  // BigInt values
-     
+     var end: Int = 0
      //If senderId falls in leafset
      //if left set
     if ((leafSetMinus.size == 0) &&  (updater<ownNode)) {
-    	leafSetMinus(0) = senderNodeId
+    	leafSetMinus += senderNodeId
     	println("First nodeID:"+ senderNodeId+" added to leaf table minus of "+ self.path.name)
       }
     else if (((BigInt.apply(leafSetMinus(0), 16)) <  updater) && (ownNode >  updater)) {
@@ -555,8 +580,16 @@ object Worker {
          i -= 1
        }
        dummy(i) = BigIntToHexString(updater)
-       // put values from i...1 --> i-1..0
-       for(j <- i to 1 by 1) {
+      
+       if(leafSetMinus.size < ideal_leafSetSize) {
+         end = 0;
+       }
+       else {
+         end = 1;
+       }
+      
+        // put values from i...1 --> i-1..0
+       for(j <- i to end by 1) {
          if(leafSetMinus(j) != null) {
            dummy(j-1) = leafSetMinus(j)
          }
@@ -567,7 +600,7 @@ object Worker {
 
      // if right set
 	   if ((leafSetPlus.size == 0) &&  (updater>ownNode)) {
-	       leafSetPlus(0) = senderNodeId
+	       leafSetPlus += senderNodeId
 	       println("First nodeID:"+ senderNodeId+" added to leaf table plus of "+ self.path.name)
 	  }
 	else if ((ownNode <  updater) && (updater <  (BigInt.apply(leafSetPlus(leafSetPlus.size-1), 16)))) {
@@ -578,8 +611,15 @@ object Worker {
          i += 1
        }
        dummy(i) = BigIntToHexString(updater)
+       
+       if(leafSetPlus.size < ideal_leafSetSize) {
+         end = leafSetPlus.size-1;
+       }
+       else {
+         end = leafSetPlus.size-2;
+       }
        // put values from i...size-2 --> i+1..size-1
-       for(j <- i to leafSetPlus.size-2) {
+       for(j <- i to end) {
          if(leafSetPlus(j) != null) {
            dummy(j+1) = leafSetMinus(j)
          }
