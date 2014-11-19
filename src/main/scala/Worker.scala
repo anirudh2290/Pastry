@@ -295,7 +295,7 @@ object Worker {
            senderNode ! updateTablesTo(updateHopsLast - 1, routingTable(updateHopsLast - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
            //println("currentNodeName is " + currentNodeName )
            println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updateHopsLast )
-           self ! sendStateTo()
+           senderNode ! sendStateTo()
          }
 
           if(newNode) {
@@ -328,7 +328,7 @@ object Worker {
                 senderNode ! updateTablesTo(updatedHopNumber - 1, routingTable(updatedHopNumber - 1), leafSetMinus, leafSetPlus, true, currentNodeName)
                 println("Nearest key " + currentNodeName)
                 println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber )
-                self ! sendStateTo()
+                senderNode ! sendStateTo()
               }
               /*If null then print the hopping ends here*/
               println("")
@@ -345,7 +345,7 @@ object Worker {
 
                 println("Nearest key " + currentNodeName)
                 println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber )
-                self ! sendStateTo()
+                senderNode ! sendStateTo()
               }
 
             }
@@ -646,7 +646,4 @@ object Worker {
        }
      }
    }
-
-
-
- }
+}
