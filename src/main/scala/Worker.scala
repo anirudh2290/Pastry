@@ -419,8 +419,8 @@ object Worker {
   def searchInTables(senderNodeId: String, currentNodeName: String): (BigInt, Boolean) = {
    var searchInMaxLeaf: Boolean = false
     var searchInMinLeaf: Boolean = false
-    var min: BigInt = Long.MaxValue
-   var max: BigInt = Long.MinValue
+    var min: BigInt = Long.MinValue
+   var max: BigInt = Long.MaxValue
    var numericallyClosest: BigInt = null
    var minLeft: Int = 0
    var maxRight: Int = leafSetPlus.size - 1
@@ -438,7 +438,7 @@ object Worker {
       searchInMaxLeaf = true
     }
 
-    if(searchInMinLeaf && searchInMaxLeaf) {
+    if(searchInMinLeaf || searchInMaxLeaf) {
       if (min <= key && key <= max) {
         numericallyClosest = findMinimumLeafSet(key)
         if(numericallyClosest != null) {
