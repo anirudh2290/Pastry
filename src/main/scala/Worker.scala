@@ -487,6 +487,7 @@ object Worker {
             output = BigInt.apply(leafSet(i - 1), 16)
           }
           return output
+
         }
 
      }
