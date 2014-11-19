@@ -216,14 +216,17 @@ object Worker {
           println("inside UpdateTables - lsMinus size = 0 ")
         }
         
-        var dummy = leafSetMinus.clone
-        leafSetMinus ++= lsMinus
-        leafSetPlus ++= lsPlus
+        var p:BigInt = BigInt.apply(self.path.name, 16)
+        //leafSetMinus = leafSetMinus.filter(x => BigInt.apply(x, 16) < p)
+        leafSetMinus ++= lsMinus.filter(x => BigInt.apply(x, 16) < p)
+        leafSetMinus ++= lsPlus.filter(x => BigInt.apply(x, 16) < p)
+        
+        leafSetPlus ++= lsMinus.filter(x => BigInt.apply(x, 16) > p)
+        leafSetPlus ++= lsPlus.filter(x => BigInt.apply(x, 16) > p)
+        
         leafSetPlus = leafSetPlus.distinct
         leafSetMinus = leafSetMinus.distinct
-        var p:BigInt = BigInt.apply(self.path.name, 16)
-        leafSetMinus = leafSetMinus.filter(x => BigInt.apply(x, 16) < p)
-        leafSetPlus  = leafSetPlus.filter(x => BigInt.apply(x, 16) > p)
+                
         leafSetMinus = leafSetMinus.sortWith(compfn1)
         leafSetMinus = leafSetMinus.reverse
         if(leafSetMinus.size >= ideal_leafSetSize)
