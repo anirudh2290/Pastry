@@ -486,28 +486,30 @@ object Worker {
      var minLeft: BigInt = Long.MaxValue
      var minRight: BigInt = Long.MaxValue
      var maxRight: BigInt = Long.MinValue
-     if(leafSetMinus.size != 0) {
+     if(leafSetMinus.size > 0) {
        maxLeft = BigInt.apply(leafSetMinus(rightMostOfLeft), 16)
        minLeft = BigInt.apply(leafSetMinus(leftMostOfLeft), 16)
      }
 
 
-     if(leafSetPlus.size != 0) {
+     if(leafSetPlus.size > 0) {
        minRight = BigInt.apply(leafSetPlus(leftMostOfRight), 16)
        maxRight = BigInt.apply(leafSetPlus(rightMostOfRight), 16)
      }
 
+     if(!(searchMaximum && searchMinimum)) {
 
-     if(!searchMinimum){
-        maxLeft = minRight
-        minLeft = minRight
+       if (!searchMinimum) {
+         maxLeft = minRight
+         minLeft = minRight
+       }
+
+       if (!searchMaximum) {
+         minRight = maxLeft
+         maxRight = maxLeft
+       }
+
      }
-
-     if(!searchMaximum) {
-       minRight = maxLeft
-       maxRight = maxLeft
-     }
-
      if(key < minLeft || key > maxRight) {
         return output
      }

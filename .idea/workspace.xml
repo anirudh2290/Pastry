@@ -56,8 +56,8 @@
       <file leaf-file-name="Worker.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/Worker.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.73137695" vertical-offset="8261" max-vertical-offset="11968">
-              <caret line="505" column="25" selection-start-line="505" selection-start-column="25" selection-end-line="507" selection-end-column="25" />
+            <state vertical-scroll-proportion="0.03837472" vertical-offset="8228" max-vertical-offset="12002">
+              <caret line="485" column="17" selection-start-line="485" selection-start-column="17" selection-end-line="485" selection-end-column="17" />
               <folding>
                 <element signature="e#0#30#0" expanded="true" />
               </folding>
@@ -1029,8 +1029,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/Worker.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.73137695" vertical-offset="8261" max-vertical-offset="11968">
-          <caret line="505" column="25" selection-start-line="505" selection-start-column="25" selection-end-line="507" selection-end-column="25" />
+        <state vertical-scroll-proportion="0.03837472" vertical-offset="8228" max-vertical-offset="12002">
+          <caret line="485" column="17" selection-start-line="485" selection-start-column="17" selection-end-line="485" selection-end-column="17" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
           </folding>
