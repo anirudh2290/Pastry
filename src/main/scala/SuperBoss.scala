@@ -105,6 +105,8 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
        if(joinCallNumber == numberNodes) {
          cancellable.cancel()
          cancellable2.cancel()
+
+         /*
          println("Inside cancellable2 cancel")
          
           // ONLY for DEBUG
@@ -115,7 +117,8 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
         	 actr ! "print"
         	 Thread.sleep(100)
          }
-         
+
+         */
        }
        else {
          println("actorsArray is " + actorsArrayBuf(joinCallNumber.intValue()))
@@ -134,7 +137,10 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
 
   def incrementActorcount(worker: ActorRef): Unit ={
     setupActors = setupActors + 1
-    if(setupActors == numberNodes) {
+    println("Inside incrementActorcount")
+    println("setupActors :: " + setupActors)
+    println("numberNodes :: " + numberNodes)
+    if(setupActors == (numberNodes - 1)) {
       worker ! getStartedWithRequests()
     }
   }

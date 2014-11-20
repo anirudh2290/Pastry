@@ -16,7 +16,7 @@ case class routeTo(msg: String, neighbourNodeId: String, senderNodeId: String, j
 case class newNodeState(snId: String, rTable: Array[Array[String]])
 case class getStartedWithRequests()
 case class sendStateTo()
-
+case class routeRandom()
 
 object Worker {
 
@@ -62,6 +62,7 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
     case routeTo(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean) =>  route(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean)
     case updateTablesTo(hopNo: Int, rTable: Array[Array[String]], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, senderNodeName: String) => updateTables(hopNo: Int, rTable: Array[Array[String]], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, senderNodeName: String)
     case sendStateTo() => sendState()
+    case routeRandom() => randomRoute()
     //case default => println("Entered default : Received message "+default);
     case "print" => printTables() 
   }
@@ -73,6 +74,7 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
 
   def getStartedWithRequests(): Unit = {
     isSetupDone = true
+    println("Inside getStartedWithRequests")
   }
 
   def compfn1(e1: String, e2: String) = (BigInt.apply(e1, 16) < BigInt.apply(e2, 16))
@@ -138,8 +140,8 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
       //System.out.println("Search table results id to route to::: " + BigIntToHexString(findRoute._1) )
       //System.out.println("Search table results is boolean true ::: " + findRoute._2 )
     }
-    //import ac.dispatcher
-    //cancellable = ac.scheduler.schedule(0 seconds, 1 seconds, self, routeRandom())
+    import ac.dispatcher
+    cancellable = ac.scheduler.schedule(0 seconds, 1 seconds, self, routeRandom())
     println("*"*50)
     println("--"*25)
     // senderBoss ! sum
@@ -183,9 +185,10 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
     println()
   }
 
-  private def routeRandom(): Unit ={
+  private def randomRoute(): Unit ={
     //Added for now to not start routeRandom
-    isSetupDone = false
+    //isSetupDone = false
+    println("Inside randomRoute")
     if (isSetupDone) {
       if(routeMessageCount == numberOfRequest) {
         cancellable.cancel()
@@ -422,7 +425,7 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
         var senderNode    = context.actorSelection("../" + senderNodeId)
         println("Nearest key " + currentNodeName)
         println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updateHopsLast )
-        //calculateAverageHops(updateHopsLast)
+        superBoss ! calculateAverageHops(updateHopsLast)
         return
       }
       else {
@@ -444,7 +447,7 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
               nextInRoute ! routeTo(msg, "", senderNodeId, false, false, updatedHopNumber, true)
             } else {
               var senderNode    = context.actorSelection("../" + senderNodeId)
-              //calculateAverageHops(updatedHopNumber)
+              superBoss ! calculateAverageHops(updatedHopNumber)
               println("Nearest key " + currentNodeName)
               println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber  )
               return
@@ -459,7 +462,7 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
               nextInRoute ! routeTo(msg, "", senderNodeId, false, false, updatedHopNumber, false)
             } else {
               var senderNode = context.actorSelection("../" + senderNodeId)
-              //calculateAverageHops(updatedHopNumber)
+              superBoss ! calculateAverageHops(updatedHopNumber)
               println("Nearest key " + currentNodeName)
               println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber  )
               return
