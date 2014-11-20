@@ -145,12 +145,19 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     println("setupActors :: " + setupActors)
     println("numberNodes :: " + numberNodes)
     if(setupActors == (numberNodes - 1)) {
-      worker ! getStartedWithRequests()
+      println("Arraybuf size is " + actorsArrayBuf.size)
+      for(i <- 0 to actorsArrayBuf.size - 1) {
+        println(actorsArrayBuf(i))
+        var actr = context.actorSelection(BigIntToHexString(actorsArrayBuf(i)))
+        actr ! getStartedWithRequests()
+      }
     }
   }
 
   def doneWithRequests(worker: ActorRef): Unit ={
     completedActors = completedActors + 1
+    println("Inside doneWithRequests")
+    println("completedActors :: " + completedActors)
     if(completedActors == numberNodes){
       //shutdown here
       println("="*20)

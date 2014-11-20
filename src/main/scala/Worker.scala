@@ -75,6 +75,7 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
   def getStartedWithRequests(): Unit = {
     isSetupDone = true
     println("Inside getStartedWithRequests")
+    println("For  :: " + self.path.name)
   }
 
   def compfn1(e1: String, e2: String) = (BigInt.apply(e1, 16) < BigInt.apply(e2, 16))
@@ -189,15 +190,19 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
     //Added for now to not start routeRandom
     //isSetupDone = false
     println("Inside randomRoute")
+    println("isSetupDone is " + isSetupDone)
     if (isSetupDone) {
+      println("routeMessageCount is " + routeMessageCount)
       if(routeMessageCount == numberOfRequest) {
         cancellable.cancel()
-        context.actorSelection("..") ! doneWithRequests()
+        println("inside done with requests")
+        context.actorSelection("../") ! doneWithRequests()
       } else {
         var nodeId: BigInt = BigInt.apply(63, scala.util.Random)
         var nodeIdString = BigIntToHexString(nodeId)
         self ! route(nodeIdString, neighbourIdString, self.path.name, false, true, 0, false)
         routeMessageCount = routeMessageCount + 1
+        println("routeMessageCount  is " + routeMessageCount)
       }
     }
   }
@@ -668,7 +673,7 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
     }
 
     // DR
-    context.actorSelection("..") ! incrementActorcount()
+    context.actorSelection("../") ! incrementActorcount()
     println("exit send state")
   }
 

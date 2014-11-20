@@ -46,13 +46,13 @@
       <file leaf-file-name="SuperBoss.scala" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/scala/SuperBoss.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.37557605" vertical-offset="432" max-vertical-offset="4386">
-              <caret line="35" column="17" selection-start-line="35" selection-start-column="17" selection-end-line="35" selection-end-column="17" />
+            <state vertical-scroll-proportion="0.6584507" vertical-offset="2584" max-vertical-offset="4505">
+              <caret line="163" column="42" selection-start-line="163" selection-start-column="15" selection-end-line="163" selection-end-column="42" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
                 <element signature="e#4604#4608#0" expanded="true" />
-                <element signature="e#4914#4918#0" expanded="true" />
-                <element signature="e#5256#5260#0" expanded="true" />
+                <element signature="e#5141#5145#0" expanded="true" />
+                <element signature="e#5575#5579#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -61,8 +61,8 @@
       <file leaf-file-name="Worker.scala" pinned="false" current="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/scala/Worker.scala">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0" vertical-offset="3587" max-vertical-offset="13005">
-              <caret line="212" column="19" selection-start-line="212" selection-start-column="19" selection-end-line="212" selection-end-column="19" />
+            <state vertical-scroll-proportion="-1.9285715" vertical-offset="1255" max-vertical-offset="13090">
+              <caret line="77" column="40" selection-start-line="77" selection-start-column="40" selection-end-line="77" selection-end-column="40" />
               <folding>
                 <element signature="e#0#30#0" expanded="true" />
               </folding>
@@ -291,7 +291,7 @@
     <configuration default="false" name="project3" type="Application" factoryName="Application" temporary="true">
       <option name="MAIN_CLASS_NAME" value="project3" />
       <option name="VM_PARAMETERS" value="" />
-      <option name="PROGRAM_PARAMETERS" value="1000 70" />
+      <option name="PROGRAM_PARAMETERS" value="10000 3" />
       <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" value="" />
@@ -549,7 +549,7 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1366" height="728" extended-state="0" />
+    <frame x="0" y="0" width="1366" height="728" extended-state="1" />
     <editor active="true" />
     <layout>
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -570,7 +570,7 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Application Servers" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.24961714" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.22613065" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.47738692" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -678,8 +678,8 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#4604#4608#0" expanded="true" />
-            <element signature="e#4914#4918#0" expanded="true" />
-            <element signature="e#5256#5260#0" expanded="true" />
+            <element signature="e#5141#5145#0" expanded="true" />
+            <element signature="e#5575#5579#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -732,8 +732,8 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#4604#4608#0" expanded="true" />
-            <element signature="e#4914#4918#0" expanded="true" />
-            <element signature="e#5256#5260#0" expanded="true" />
+            <element signature="e#5141#5145#0" expanded="true" />
+            <element signature="e#5575#5579#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -786,8 +786,8 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#4604#4608#0" expanded="true" />
-            <element signature="e#4914#4918#0" expanded="true" />
-            <element signature="e#5256#5260#0" expanded="true" />
+            <element signature="e#5141#5145#0" expanded="true" />
+            <element signature="e#5575#5579#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -840,8 +840,8 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#4604#4608#0" expanded="true" />
-            <element signature="e#4914#4918#0" expanded="true" />
-            <element signature="e#5256#5260#0" expanded="true" />
+            <element signature="e#5141#5145#0" expanded="true" />
+            <element signature="e#5575#5579#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -894,8 +894,8 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#4604#4608#0" expanded="true" />
-            <element signature="e#4914#4918#0" expanded="true" />
-            <element signature="e#5256#5260#0" expanded="true" />
+            <element signature="e#5141#5145#0" expanded="true" />
+            <element signature="e#5575#5579#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -940,8 +940,8 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#4604#4608#0" expanded="true" />
-            <element signature="e#4914#4918#0" expanded="true" />
-            <element signature="e#5256#5260#0" expanded="true" />
+            <element signature="e#5141#5145#0" expanded="true" />
+            <element signature="e#5575#5579#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -979,8 +979,8 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#4604#4608#0" expanded="true" />
-            <element signature="e#4914#4918#0" expanded="true" />
-            <element signature="e#5256#5260#0" expanded="true" />
+            <element signature="e#5141#5145#0" expanded="true" />
+            <element signature="e#5575#5579#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1018,8 +1018,8 @@
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#4604#4608#0" expanded="true" />
-            <element signature="e#4914#4918#0" expanded="true" />
-            <element signature="e#5256#5260#0" expanded="true" />
+            <element signature="e#5141#5145#0" expanded="true" />
+            <element signature="e#5575#5579#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1075,8 +1075,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/Worker.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3587" max-vertical-offset="13005">
-          <caret line="212" column="19" selection-start-line="212" selection-start-column="19" selection-end-line="212" selection-end-column="19" />
+        <state vertical-scroll-proportion="-1.9285715" vertical-offset="1255" max-vertical-offset="13090">
+          <caret line="77" column="40" selection-start-line="77" selection-start-column="40" selection-end-line="77" selection-end-column="40" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
           </folding>
@@ -1085,13 +1085,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/scala/SuperBoss.scala">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.37557605" vertical-offset="432" max-vertical-offset="4386">
-          <caret line="35" column="17" selection-start-line="35" selection-start-column="17" selection-end-line="35" selection-end-column="17" />
+        <state vertical-scroll-proportion="0.6584507" vertical-offset="2584" max-vertical-offset="4505">
+          <caret line="163" column="42" selection-start-line="163" selection-start-column="15" selection-end-line="163" selection-end-column="42" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#4604#4608#0" expanded="true" />
-            <element signature="e#4914#4918#0" expanded="true" />
-            <element signature="e#5256#5260#0" expanded="true" />
+            <element signature="e#5141#5145#0" expanded="true" />
+            <element signature="e#5575#5579#0" expanded="true" />
           </folding>
         </state>
       </provider>
