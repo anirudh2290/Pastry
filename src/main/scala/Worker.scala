@@ -17,6 +17,7 @@ case class newNodeState(snId: String, rTable: Array[Array[String]])
 case class getStartedWithRequests()
 case class sendStateTo()
 
+
 object Worker {
 
 
@@ -62,9 +63,13 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
     case updateTablesTo(hopNo: Int, rTable: Array[Array[String]], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, senderNodeName: String) => updateTables(hopNo: Int, rTable: Array[Array[String]], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, senderNodeName: String)
     case sendStateTo() => sendState()
     //case default => println("Entered default : Received message "+default);
-
-
+    case "print" => printTables() 
   }
+  
+  private def printTables() {
+     printRoutingTable()
+     printPrivateLeafSet()
+   }
 
   def getStartedWithRequests(): Unit = {
     isSetupDone = true
@@ -242,7 +247,6 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
       leafSetPlus.reduceToSize(0)
       leafSetPlus ++= dummy
       leafSetPlus.reduceToSize(ideal_leafSetSize)
-
       dummy = leafSetMinus.sortWith(compfn2)
       dummy.reduceToSize(ideal_leafSetSize)
       dummy = leafSetMinus.sortWith(compfn1)
@@ -336,8 +340,8 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
       }
       */
 
-      printRoutingTable()
-      printPrivateLeafSet()
+      //printRoutingTable()
+      //printPrivateLeafSet()
     }
   }
 
