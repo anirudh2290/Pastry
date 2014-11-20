@@ -357,6 +357,7 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
         //println("currentNodeName is " + currentNodeName )
         println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updateHopsLast )
         senderNode ! sendStateTo()
+        return
       }
 
       if(newNode) {
@@ -390,6 +391,7 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
             println("Nearest key " + currentNodeName)
             println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber )
             senderNode ! sendStateTo()
+            return
           }
           /*If null then print the hopping ends here*/
           println("")
@@ -407,6 +409,7 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
             println("Nearest key " + currentNodeName)
             println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber )
             senderNode ! sendStateTo()
+            return
           }
 
         }
