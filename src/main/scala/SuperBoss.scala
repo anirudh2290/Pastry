@@ -76,7 +76,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
      def init_config() {
        var i = 0
        import ac.dispatcher
-       cancellable = ac.scheduler.schedule(0 milliseconds, 50 milliseconds, self, joinCheck())
+       cancellable = ac.scheduler.schedule(0 milliseconds, 1 milliseconds, self, joinCheck())
        for (i <- 0 to (numberNodes-1)) {
          println("Inside joinOnebyOne")
          joinOnebyOne(i)
@@ -96,7 +96,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
          println("hashset size is" + hashset.size)
          actorsArray = hashset.toArray
          import ac.dispatcher
-         cancellable2 = ac.scheduler.schedule(0 milliseconds, 1000 milliseconds, self, joinCalls())
+         cancellable2 = ac.scheduler.schedule(0 milliseconds, 10 milliseconds, self, joinCalls())
 
        }
      }
@@ -106,6 +106,16 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
          cancellable.cancel()
          cancellable2.cancel()
          println("Inside cancellable2 cancel")
+         
+          // ONLY for DEBUG
+         // For every actor, print tables
+         for(i <- 0 until actorsArray.length){
+        	 var actr = context.actorSelection(BigIntToHexString(actorsArray(i))) 	 
+        	 println("I am "+BigIntToHexString(actorsArray(i)))
+        	 actr ! "print"
+        	 Thread.sleep(100)
+         }
+         
        }
        else {
          println("actorsArray is " + actorsArrayBuf(joinCallNumber.intValue()))
