@@ -142,7 +142,8 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
       //System.out.println("Search table results is boolean true ::: " + findRoute._2 )
     }
     import ac.dispatcher
-    cancellable = ac.scheduler.schedule(0 seconds, 1 seconds, self, routeRandom())
+    cancellable = ac.scheduler.schedule(0 milliseconds, 1 milliseconds, self,
+      routeRandom())
     println("*"*50)
     println("--"*25)
     // senderBoss ! sum
