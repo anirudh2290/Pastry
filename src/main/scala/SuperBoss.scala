@@ -39,7 +39,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     var lastInserted:BigInt = 0
     var totalHopsForNodes:Int = 0
     var totalNodesVisited: Int = 0
-    var averageHops: Int = 0
+    var averageHops: Double = 0
     var completedActors: Int = 0
     var setupActors: Int = 0
     val neighbouringActors: ArrayBuffer[String] = new ArrayBuffer[String]
@@ -77,12 +77,16 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     
      def init_config() {
        var i = 0
+       println("inside init_config")
        import ac.dispatcher
-       cancellable = ac.scheduler.schedule(0 milliseconds, 1 milliseconds, self, joinCheck())
+       cancellable = ac.scheduler.schedule(0 microseconds, 1 microseconds, self, joinCheck())
        for (i <- 0 to (numberNodes-1)) {
      //   println("Inside joinOnebyOne")
+
          joinOnebyOne(i)
        }
+       //println(numberNodes)
+
     //   println("Printing hashset")
     //   println(hashset)
      }
@@ -92,13 +96,14 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     //   println(hashset.size)
     //   println(neighbouringActors.size)
     //   println(numberNodes)
+       //println("Inside checkJoin")
        if(hashset.size == numberNodes && neighbouringActors.size == numberNodes) {
     //     println("Inside cancel")
          cancellable.cancel()
     //     println("hashset size is" + hashset.size)
          actorsArray = hashset.toArray
          import ac.dispatcher
-         cancellable = ac.scheduler.schedule(0 milliseconds, 1 microseconds, self, joinCalls())
+         cancellable = ac.scheduler.schedule(0 microseconds, 1 microseconds, self, joinCalls())
 
        }
      }
@@ -124,7 +129,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
          */
        }
        else {
-         println("actorsArray is " + actorsArrayBuf(joinCallNumber.intValue()))
+      //   println("actorsArray is " + actorsArrayBuf(joinCallNumber.intValue()))
          var actr = context.actorSelection(BigIntToHexString(actorsArrayBuf(joinCallNumber.intValue())))
       //   println("="*40)
      //    println("Inside join " + actr.pathString + " neighbour is " + neighbouringActors(joinCallNumber.intValue()))
@@ -172,7 +177,9 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     println("number of Hops is " + numberOfHops)
     totalHopsForNodes = numberOfHops + totalHopsForNodes
     totalNodesVisited = totalNodesVisited + 1
-    averageHops = totalHopsForNodes/totalNodesVisited
+    println("totalHopsForNodes " + totalHopsForNodes)
+    println("totalNodesVisited " + totalNodesVisited)
+    averageHops = totalHopsForNodes.toDouble/totalNodesVisited
     println("Average till now :::  " + averageHops)
 
   }
@@ -207,7 +214,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
 
   def joinOnebyOne(id: Int) {   
   // TODO non-duplicate check yet to be added   
-
+  //println("Inside joinOnebyOne")
   //  println("Inside joinOnebyOne :::: "  + id)
 
     //DR: create a pattern
