@@ -173,14 +173,14 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
   }
 
   def calculateAverageHops(sender: ActorRef, numberOfHops: Int): Unit ={
-    println("sender is " + sender.path.name)
-    println("number of Hops is " + numberOfHops)
+    //println("sender is " + sender.path.name)
+    //println("number of Hops is " + numberOfHops)
     totalHopsForNodes = numberOfHops + totalHopsForNodes
     totalNodesVisited = totalNodesVisited + 1
-    println("totalHopsForNodes " + totalHopsForNodes)
-    println("totalNodesVisited " + totalNodesVisited)
+    //println("totalHopsForNodes " + totalHopsForNodes)
+    //println("totalNodesVisited " + totalNodesVisited)
     averageHops = totalHopsForNodes.toDouble/totalNodesVisited
-    println("Average till now :::  " + averageHops)
+    //println("Average till now :::  " + averageHops)
 
   }
 
