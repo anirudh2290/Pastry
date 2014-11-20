@@ -47,9 +47,11 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
     var cancellable:Cancellable = new Cancellable {override def isCancelled: Boolean = false
       override def cancel(): Boolean = false
     }
+    /*
     var cancellable2:Cancellable = new Cancellable {override def isCancelled: Boolean = false
       override def cancel(): Boolean = false
     }
+    */
     println("b and base are "+b+" "+base)
 
     // DR
@@ -96,7 +98,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
          println("hashset size is" + hashset.size)
          actorsArray = hashset.toArray
          import ac.dispatcher
-         cancellable2 = ac.scheduler.schedule(0 milliseconds, 10 milliseconds, self, joinCalls())
+         cancellable = ac.scheduler.schedule(0 milliseconds, 10 milliseconds, self, joinCalls())
 
        }
      }
@@ -104,7 +106,7 @@ class SuperBoss(numberNodes: Int, ac: ActorSystem, numberOfRequests: Int) extend
      def initiateJoinCalls(): Unit = {
        if(joinCallNumber == numberNodes) {
          cancellable.cancel()
-         cancellable2.cancel()
+         
          println("Inside cancellable2 cancel")
          
           // ONLY for DEBUG
