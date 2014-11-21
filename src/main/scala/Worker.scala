@@ -83,9 +83,6 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
 
   def join(senderBoss: ActorRef, neighbourId: String):Unit = {
     neighbourIdString = neighbourId
-    //println("--"*25)
-    //println("*"*50)
-    //println("Inside testInit")
     var i = 0
     var sum = 0
 
@@ -96,8 +93,6 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
       column = BigInt.apply(currentNode.charAt(i).toString(), 16)
       if (routingTable(i)(column.intValue()) != currentNode)
         routingTable(i)(column.intValue()) = currentNode
-
-
     }
 
     column = BigInt.apply(currentNode.charAt(0).toString(), 16)
@@ -105,42 +100,20 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
     }
     else {
       var length:Int =  neighbourIdString.zip(currentNode).takeWhile(Function.tupled(_ == _)).map(_._1).mkString.size
-      //println("length of the match is " + length)
-      //println("neighbourIdString is " + neighbourIdString)
-      //println("currentNode is " + currentNode)
       column = BigInt.apply(neighbourIdString.charAt(length).toString(), 16)
       routingTable(length)(column.intValue()) = neighbourIdString
-      //println("routingTable value is " + routingTable(length)(column.intValue()) )
-
-      //println("########################### Adding neighbour to LeafTable ###################################")
       if(BigInt.apply(neighbourIdString, 16) < (BigInt.apply(currentNode, 16)))
       {
-      //  println("Trying to insert in left + "+ neighbourIdString)
         leafSetMinus += neighbourIdString
       }
       else if(BigInt.apply(neighbourIdString, 16) > (BigInt.apply(currentNode, 16))){
-    //    println("Trying to insert in right + "+ neighbourIdString)
         leafSetPlus += neighbourIdString
       }
 
     }
-    //println("Completing testInit")
-    if(neighbourId == "") {
-      //println("="*10)
-      //println("Starting node")
-      //println("="*10)
-    } else {
-      //println("="*10)
-      //println("Node >= 1")
-      //println("="*10)
-
-  //    println("before routing from inside join : "+self.path.name)
+    if(neighbourId != "") {
       self ! routeTo("timepass", neighbourId, self.path.name, true, true, 0, false)
-      //printRoutingTable()
-      //var findRoute:(BigInt, Boolean) = searchInTables(neighbourId, self.path.name)
-      //System.out.println("Search table results id to route to::: " + BigIntToHexString(findRoute._1) )
-      //System.out.println("Search table results is boolean true ::: " + findRoute._2 )
-    }
+     }
     import ac.dispatcher
     cancellable = ac.scheduler.schedule(0 microseconds, 1 microseconds, self, routeRandom())
 
@@ -185,22 +158,15 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
   }
 
   private def randomRoute(): Unit ={
-    //Added for now to not start routeRandom
-    //isSetupDone = false
-   // println("Inside randomRoute")
-   // println("isSetupDone is " + isSetupDone)
     if (isSetupDone) {
-     // println("routeMessageCount is " + routeMessageCount)
       if(routeMessageCount == numberOfRequest) {
         cancellable.cancel()
-       // println("inside done with requests")
         context.actorSelection("../") ! doneWithRequests()
       } else {
         var nodeId: BigInt = BigInt.apply(63, scala.util.Random)
         var nodeIdString = BigIntToHexString(nodeId)
         self ! route(nodeIdString, neighbourIdString, self.path.name, false, true, 0, false)
         routeMessageCount = routeMessageCount + 1
-      //  println("routeMessageCount  is " + routeMessageCount)
       }
     }
   }
@@ -214,22 +180,7 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
 
   def updateTables(hopNo: Int, rTable: Array[Array[String]], lsMinus: ArrayBuffer[String], lsPlus: ArrayBuffer[String], finalNode: Boolean, senderNodeName: String): Unit = {
     if(finalNode) {
-     // println("inside UpdateTables for " + self.path.name)
-     /* if(lsPlus.size != 0) {
-        println("inside UpdateTables - lsPlus " + lsPlus(lsPlus.size-1))
-      }
-      else {
-        println("inside UpdateTables - lsPlus size = 0 ")
-      }
-      if(lsMinus.size != 0) {
-        println("inside UpdateTables - lsMinus " + lsMinus(lsMinus.size-1))
-      }
-      else {
-        println("inside UpdateTables - lsMinus size = 0 ")
-      }
-*/
       var p:BigInt = BigInt.apply(self.path.name, 16)
-      //leafSetMinus = leafSetMinus.filter(x => BigInt.apply(x, 16) < p)
       leafSetMinus ++= lsMinus.filter(x => BigInt.apply(x, 16) < p)
       leafSetMinus ++= lsPlus.filter(x => BigInt.apply(x, 16) < p)
 
@@ -247,66 +198,10 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
       leafSetPlus.sortWith(compfn1)
       if(leafSetPlus.size >= ideal_leafSetSize)
         leafSetPlus.reduceToSize(ideal_leafSetSize)
-      /*
-      dummy = leafSetPlus.sortWith(compfn1)
-      var i = 0
-      leafSetPlus.reduceToSize(0)
-      leafSetPlus ++= dummy
-      leafSetPlus.reduceToSize(ideal_leafSetSize)
-      dummy = leafSetMinus.sortWith(compfn2)
-      dummy.reduceToSize(ideal_leafSetSize)
-      dummy = leafSetMinus.sortWith(compfn1)
-      leafSetMinus.reduceToSize(0)
-      leafSetMinus ++= dummy
-      leafSetMinus.reduceToSize(ideal_leafSetSize)
-      */
-      //  println("leafsetPlus : " + leafSetPlus)
-      //  println("leafsetPlus : " + leafSetMinus)
-  //    println("Node setup done !")
     }
     if(hopNo >= 0) {
-    //  println("="*20)
-    //  println("Inside hop greater than 0")
-    //  println("hopNo is " + hopNo)
-    //  println("="*20)
       var currentNodeName: String = self.path.name
-    //  println("Inside update tables path name value is  " + currentNodeName)
-      //var column: BigInt = BigInt.apply(currentNodeName.charAt(rowNumber).toString(), 16)
-      /*TODO || Consider this . The neighbour can have a match of more than one character with the currentNode. The paper assumes
-        TODO || the general case wherein there is no match. This may not always be true. Have to handle this in the future
-      */
-      //var temp: String   = routingTable(hopNo)(column.intValue())
-      //println("Inside updateTables temp value is " + temp)
-      /* println("inside updateTables ")
-       println("row received from " + senderNodeName)
-      for(i <-0 to rTable.length - 1) {
-        print(rTable(i))
-        print("               ")
-      }
-      println() */
-      /*Change made to allow to copy first n rows or nth row*/
-      /*
-      if(rowNumber < 16) {
-        if (hopNo == 0) {
-          //logic for coying rows till rowNumber
-          for (i <- 0 to rowNumber) {
-            var column: BigInt = BigInt.apply(currentNodeName.charAt(i).toString(), 16)
-            var temp2: String = routingTable(i)(column.intValue())
-            rTable(i).copyToArray(routingTable(i))
-            if (temp2 != null) {
-              routingTable(i)(column.intValue()) = temp2
-            }
-          }
-        } else {
-          var column: BigInt = BigInt.apply(currentNodeName.charAt(rowNumber).toString(), 16)
-          var temp2: String = routingTable(rowNumber)(column.intValue())
-          rTable(rowNumber).copyToArray(routingTable(rowNumber))
-          if (temp2 != null) {
-            routingTable(hopNo)(column.intValue()) = temp2
-          }
-        }
-      }
-      */
+
       var length:Int =  senderNodeName.zip(self.path.name).takeWhile(Function.tupled(_ == _)).map(_._1).mkString.size
       var column:BigInt = BigInt.apply(senderNodeName.charAt(length).toString(), 16)
       if(routingTable(length)(column.intValue()) == null) {
@@ -338,53 +233,28 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
 
 
       var i = 0
-
-      /*
-      for (i<-0 to rTable.length-1) {
-        if(rTable(i)!=null)
-        println("of own : " + self.path.name+" table: "+rTable(i)+ " at " +hopNo+" , "+i)
-      }
-      */
-
-      //printRoutingTable()
-      //printPrivateLeafSet()
     }
   }
 
   def route(msg: String, neighbourNodeId: String, senderNodeId: String, join: Boolean, newNode: Boolean, hopNumber: Int, lastNode: Boolean): Unit = {
     var currentNodeName: String = self.path.name
-    //println("Inside route: currentNodeName is " + currentNodeName )
     if(join) {
       if(lastNode) {
-        //println("inside route: lastNode for currentNode :"+senderNodeId)
         var updateHopsLast = hopNumber + 1
         var senderNode    = context.actorSelection("../" + senderNodeId)
         senderNode ! updateTablesTo(updateHopsLast - 1, routingTable, leafSetMinus, leafSetPlus, true, currentNodeName)
-        //println("currentNodeName is " + currentNodeName )
-        //println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updateHopsLast )
         senderNode ! sendStateTo()
         return
       }
 
       if(newNode) {
-        //println("inside route: newNode for currentNode :"+senderNodeId)
-        //println("neighbournodeid is " + neighbourNodeId)
         val neighbouringActor = context.actorSelection("../" + neighbourNodeId)
-        //print("Inside route : neighbouringActor is " + neighbouringActor)
-        //println("Routing to :::::::::::::" + neighbouringActor.pathString)
         neighbouringActor ! routeTo(msg, "",senderNodeId, join, false, hopNumber, false)
       }
       else {
-        // DR
-        //println("Entered else loop.")
         var updatedHopNumber = hopNumber + 1
-        //println("self path name is  " + self.path.name)
         var findRoute:(BigInt, Boolean) = searchInTables(senderNodeId, currentNodeName)
-        //println("findroute._1 is " + findRoute._1)
-        //println("findroute._2 is " + findRoute._2)
-        //Leafset true
         if(findRoute._2) {
-          /*If not null route to that node with minimum */
           if(findRoute._1 != null) {
             var nextInRouteId = BigIntToHexString(findRoute._1)
             var nextInRoute   = context.actorSelection("../" + nextInRouteId)
@@ -394,13 +264,9 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
           } else {
             var senderNode    = context.actorSelection("../" + senderNodeId)
             senderNode ! updateTablesTo(updatedHopNumber - 1, routingTable, leafSetMinus, leafSetPlus, true, currentNodeName)
-         //   println("Nearest key " + currentNodeName)
-            //println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber )
             senderNode ! sendStateTo()
             return
           }
-          /*If null then print the hopping ends here*/
-          //println("")
         } else {
           if (findRoute._1 != null) {
             var nextInRouteId = BigIntToHexString(findRoute._1)
@@ -411,9 +277,6 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
           } else {
             var senderNode    = context.actorSelection("../" + senderNodeId)
             senderNode ! updateTablesTo(updatedHopNumber - 1, routingTable, leafSetMinus, leafSetPlus, true, currentNodeName)
-
-         //   println("Nearest key " + currentNodeName)
-            //println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber )
             senderNode ! sendStateTo()
             return
           }
@@ -422,25 +285,20 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
       }
 
     } else {
-      //not join.. so normal routing
       if(lastNode) {
         var updateHopsLast = hopNumber + 1
         var senderNode    = context.actorSelection("../" + senderNodeId)
-        //println("Nearest key " + currentNodeName)
-        //println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updateHopsLast )
         superBoss ! calculateAverageHops(updateHopsLast)
         return
       }
       else {
         if(newNode) {
           val neighbouringActor = context.actorSelection("../" + neighbourNodeId)
-          //print("neighbouringActor is " + neighbouringActor)
           neighbouringActor ! routeTo(msg, "",senderNodeId, false, false, hopNumber, false)
         }
         else {
           var updatedHopNumber = hopNumber + 1
           var findRoute:(BigInt, Boolean) = searchInTables(msg, currentNodeName)
-          //Leafset true
           if(findRoute._2) {
             /*If not null route to that node with minimum */
             if(findRoute._1 != null) {
@@ -451,12 +309,8 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
             } else {
               var senderNode    = context.actorSelection("../" + senderNodeId)
               superBoss ! calculateAverageHops(updatedHopNumber)
-            //  println("Nearest key " + currentNodeName)
-              //println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber  )
               return
             }
-            /*If null then print the hopping ends here*/
-            //println("")
           } else {
             if (findRoute._1 != null) {
               var nextInRouteId = BigIntToHexString(findRoute._1)
@@ -466,8 +320,6 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
             } else {
               var senderNode = context.actorSelection("../" + senderNodeId)
               superBoss ! calculateAverageHops(updatedHopNumber)
-            //  println("Nearest key " + currentNodeName)
-              //println("Received the following msg : " + msg + "from senderNode " + senderNode.pathString + ". Hops latest " + updatedHopNumber  )
               return
             }
           }
@@ -509,15 +361,9 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
     }
     //Longest Common Prefix size
     var length:Int =  senderNodeId.zip(currentNodeName).takeWhile(Function.tupled(_ == _)).map(_._1).mkString.size
-    //println("senderNodeId is " + senderNodeId)
-    //println("currentNodeName is " + currentNodeName)
-    // println("Accessing character" + length)
     if(length == 16)
       return (numericallyClosest, false)
     var column:BigInt = BigInt.apply(senderNodeId.charAt(length).toString(), 16)
-    //println("="*20)
-    //println("length is " + length + " column is " + column)
-    //println("="*20)
     if(routingTable(length)(column.intValue()) != null) {
       numericallyClosest = BigInt.apply(routingTable(length)(column.intValue()), 16)
     }
@@ -527,17 +373,6 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
 
   private def findMinimumLeafSet(key: BigInt, searchMinimum: Boolean, searchMaximum: Boolean): BigInt = {
 
-    /*
-    var rightMostOfLeft: Int = leafSetMinus.size - 1
-    var leftMostOfRight: Int = 0
-    var maxLeft = BigInt.apply(leafSetMinus(rightMostOfLeft), 16)
-    var minRight = BigInt.apply(leafSetPlus(leftMostOfRight), 16)
-    var output: BigInt = null
-   var leftMostOfLeft: Int = 0
-   var rightMostOfRight: Int = leafSetPlus.size - 1
-   var minLeft = BigInt.apply(leafSetMinus(leftMostOfLeft), 16)
-   var maxRight = BigInt.apply(leafSetPlus(rightMostOfRight), 16)
-    */
     var output: BigInt = null
     var rightMostOfLeft: Int = leafSetMinus.size - 1
     var leftMostOfRight: Int = 0
@@ -607,16 +442,12 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
   }
 
   private def findNearestNumericalLeaf(leafSet: ArrayBuffer[String],key: BigInt): BigInt = {
-    //println("Inside findNearestNumericalLeaf")
     var leafSetSize: Int = leafSet.size - 1
-    // println("leafSetSize is " + leafSetSize)
     var output: BigInt = null
     if(leafSetSize < 0) return output
     if(leafSetSize == 0 || leafSetSize == 1) return BigInt.apply(leafSet(leafSetSize), 16)
     for(i <- 0 to leafSetSize) {
-      // println("Inside for")
       if(BigInt.apply(leafSet(i), 16) >= key ) {
-        //println("Inside if of leafSet")
         if(i == 0)
           return BigInt.apply(leafSet(i), 16)
         var diff1: BigInt = key - BigInt.apply(leafSet(i), 16)
@@ -635,17 +466,12 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
   }
 
   private def sendState() {
-    // for each member of the table sets, send own state
-    // DR
-    //println("entered send state")
     var i = 0
     var j = 0
     for(i <- 0 to RTrows-1) {
       for(i <- 0 to RTcols-1) {
 
         if ((routingTable(i)(j) != null) && (routingTable(i)(j) != self.path.name)) {
-          // DR
-          // println("Ting ting tidin")
           var node = context.actorSelection("../" + routingTable(i)(j))
           node ! newNodeState(self.path.name, routingTable)
         }
@@ -654,8 +480,6 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
     for(i <- 0 to leafSetMinus.size-1) {
 
       if ((leafSetMinus(i) != null) && (leafSetMinus(i) != self.path.name)) {
-        // DR
-        //println("Ting ting tidin")
         var node = context.actorSelection("../" + leafSetMinus(i))
         node ! newNodeState(self.path.name, routingTable)
       }
@@ -663,38 +487,24 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
     for(i <- 0 to leafSetPlus.size-1) {
 
       if ((leafSetPlus(i) != null) && (leafSetPlus(i) != self.path.name)) {
-        // DR
-        //println("Ting ting tidin")
         var node = context.actorSelection("../" + leafSetPlus(i))
         node ! newNodeState(self.path.name, routingTable)
       }
     }
 
-    // DR
     context.actorSelection("../") ! incrementActorcount()
-    //println("exit send state")
+
   }
 
   private def updateTablesAsPerNew(senderNodeId: String,  rTable: Array[Array[String]]) {
 
     var ownNode = BigInt.apply((self.path.name), 16) //BigInt values
     var updater = BigInt.apply(senderNodeId, 16)  // BigInt values
-   // println("Inside updateTablesAsPerNew")
-   // println("ownNode = "+self.path.name)
-   // println("updater = "+senderNodeId)
-   // println("sizes = "+leafSetMinus.size+" "+leafSetPlus.size)
     var end: Int = 0
-    //If senderId falls in leafset
-    //if left set
     if ((leafSetMinus.size == 0) &&  (updater<ownNode)) {
       leafSetMinus += senderNodeId
-      //leafSetMinus.append(senderNodeId)
-     // println("First nodeID:"+ senderNodeId+" added to leaf table minus of "+ self.path.name)
     }
     else if ((leafSetMinus.size > 0) && ((BigInt.apply(leafSetMinus(0), 16)) <  updater) && (ownNode >  updater)) {
-      //println("Inside left leaf table else loop: ")
-
-
       if((leafSetMinus.contains(senderNodeId))) {
         leafSetMinus += senderNodeId
         leafSetMinus = leafSetMinus.sortWith(compfn2)
@@ -714,7 +524,6 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
       //println("First nodeID:"+ senderNodeId+" added to leaf table plus of "+ self.path.name)
     }
     else if ((leafSetPlus.size > 0) && (ownNode <  updater) && (updater <  (BigInt.apply(leafSetPlus(leafSetPlus.size-1), 16)))) {
-      //println("Inside right leaf table else loop: ")
       if(!(leafSetPlus.contains(senderNodeId))) {
 
         leafSetPlus += senderNodeId
@@ -724,8 +533,6 @@ class Worker(ac: ActorSystem, superBoss: ActorRef, numNodes:Int, b:Int, numberOf
         }
       }
     }
-
-    //println("New leaflet sizes = "+leafSetMinus.size+" "+leafSetPlus.size)
 
     // if routing table
     //Longest Common Prefix size
